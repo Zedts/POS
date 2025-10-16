@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, BarChart3, Users, Package, TrendingUp, Shield, Zap, Globe } from 'lucide-react';
+import AuthModal from './components/AuthModal';
+import { ToastContainer } from 'react-toastify';
+import './components/ToastConfig.css';
 
 function Dashboard() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authModalOpen, setAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -12,6 +17,23 @@ function Dashboard() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const handleAuthSuccess = (role: string, userData: unknown) => {
+    console.log('Login Success:', role, userData);
+    setAuthModalOpen(false);
+    
+    // Redirect based on role
+    if (role === 'admin') {
+      window.location.href = '/admin/home';
+    } else if (role === 'employee') {
+      window.location.href = '/employee/home';
+    }
+  };
+
+  const openAuthModal = (mode: 'login' | 'register') => {
+    setAuthMode(mode);
+    setAuthModalOpen(true);
+  };
 
   const features = [
     {
@@ -66,6 +88,27 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--color-background)' }}>
+      {/* Toast Notification Container */}
+      <ToastContainer 
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+      
+      {/* Auth Modal */}
+      <AuthModal 
+        isOpen={authModalOpen}
+        onClose={() => setAuthModalOpen(false)}
+        mode={authMode}
+        onSuccess={handleAuthSuccess}
+      />
+
       {/* Navbar */}
       <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled 
@@ -94,8 +137,12 @@ function Dashboard() {
               <a href="#pricing" className="transition-colors" style={{ color: 'var(--color-text-primary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-primary)'}>
                 Harga
               </a>
-              <button className="text-white px-6 py-2.5 rounded-lg transition-all hover:shadow-lg" style={{ backgroundColor: 'var(--color-primary)' }}>
-                Mulai Gratis
+              <button 
+                onClick={() => openAuthModal('login')}
+                className="text-white px-6 py-2.5 rounded-lg transition-all hover:shadow-lg" 
+                style={{ backgroundColor: 'var(--color-primary)' }}
+              >
+                Mulai
               </button>
             </div>
 
@@ -122,7 +169,11 @@ function Dashboard() {
                 <a href="#pricing" className="transition-colors" style={{ color: 'var(--color-text-primary)' }} onMouseEnter={(e) => e.currentTarget.style.color = 'var(--color-primary)'} onMouseLeave={(e) => e.currentTarget.style.color = 'var(--color-text-primary)'}>
                   Harga
                 </a>
-                <button className="text-white px-6 py-2.5 rounded-lg transition-all" style={{ backgroundColor: 'var(--color-primary)' }}>
+                <button 
+                  onClick={() => openAuthModal('login')}
+                  className="text-white px-6 py-2.5 rounded-lg transition-all" 
+                  style={{ backgroundColor: 'var(--color-primary)' }}
+                >
                   Mulai Gratis
                 </button>
               </div>
@@ -148,11 +199,21 @@ function Dashboard() {
               Platform POS all-in-one yang membantu ribuan bisnis meningkatkan penjualan, mengoptimalkan operasional, dan mengembangkan usaha mereka
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <button className="text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-0.5" style={{ backgroundColor: 'var(--color-primary)' }}>
-                Coba Gratis 14 Hari
+              <button 
+                onClick={() => openAuthModal('login')}
+                className="text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-0.5" 
+                style={{ backgroundColor: 'var(--color-primary)' }}
+              >
+                Masuk Sekarang
               </button>
-              <button className="border-2 px-8 py-4 rounded-lg text-lg font-semibold transition-all" style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-light)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
-                Lihat Demo
+              <button 
+                onClick={() => openAuthModal('register')}
+                className="border-2 px-8 py-4 rounded-lg text-lg font-semibold transition-all" 
+                style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }} 
+                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-light)'} 
+                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+              >
+                Register
               </button>
             </div>
             <p className="mt-6 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
@@ -377,7 +438,11 @@ function Dashboard() {
           <p className="text-xl text-white/90 mb-8">
             Bergabunglah dengan ribuan bisnis yang telah mempercayai POS Pro
           </p>
-          <button className="bg-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all hover:shadow-xl transform hover:-translate-y-0.5" style={{ color: 'var(--color-primary)' }}>
+          <button 
+            onClick={() => openAuthModal('register')}
+            className="bg-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-100 transition-all hover:shadow-xl transform hover:-translate-y-0.5" 
+            style={{ color: 'var(--color-primary)' }}
+          >
             Mulai Gratis Sekarang
           </button>
         </div>
