@@ -56,4 +56,15 @@ export const registerAPI = async (studentData: {
   }
 };
 
+// Dashboard API
+export const getDashboardDataAPI = async () => {
+  try {
+    const response = await api.get("/dashboard/data");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 export default api;
