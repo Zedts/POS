@@ -83,57 +83,57 @@ function AdminLayout({ children }: AdminLayoutProps) {
     { 
       label: 'Dashboard', 
       ariaLabel: 'Go to Dashboard', 
-      link: '/admin/home' 
+      link: '/admin/home'
     },
     { 
       label: 'Products', 
       ariaLabel: 'Manage Products', 
-      link: '/admin/products' 
+      link: '/admin/products'
     },
     { 
       label: 'Categories', 
       ariaLabel: 'Manage Categories', 
-      link: '/admin/categories' 
+      link: '/admin/categories'
     },
     { 
       label: 'Discounts', 
       ariaLabel: 'Manage Discounts', 
-      link: '/admin/discounts' 
+      link: '/admin/discounts'
     },
     { 
       label: 'Orders', 
       ariaLabel: 'View Orders', 
-      link: '/admin/orders' 
+      link: '/admin/orders'
     },
     { 
       label: 'Invoices', 
       ariaLabel: 'View Invoices', 
-      link: '/admin/invoices' 
+      link: '/admin/invoices'
     },
     { 
       label: 'Students', 
       ariaLabel: 'Manage Students', 
-      link: '/admin/students' 
+      link: '/admin/students'
     },
     { 
       label: 'Reports', 
       ariaLabel: 'View Reports', 
-      link: '/admin/reports' 
+      link: '/admin/reports'
     },
     { 
       label: 'Price History', 
       ariaLabel: 'View Price History', 
-      link: '/admin/price-history' 
+      link: '/admin/price-history'
     },
     { 
       label: 'Audit Logs', 
       ariaLabel: 'View Audit Logs', 
-      link: '/admin/audit-logs' 
+      link: '/admin/audit-logs'
     },
     { 
       label: 'Settings', 
       ariaLabel: 'Go to Settings', 
-      link: '/admin/settings' 
+      link: '/admin/settings'
     }
   ];
 
@@ -141,57 +141,68 @@ function AdminLayout({ children }: AdminLayoutProps) {
     { 
       icon: <Home size={18} />, 
       label: 'Dashboard', 
-      onClick: () => navigate('/admin/home') 
+      onClick: () => navigate('/admin/home'),
+      path: '/admin/home'
     },
     { 
       icon: <Package size={18} />, 
       label: 'Products', 
-      onClick: () => navigate('/admin/products') 
+      onClick: () => navigate('/admin/products'),
+      path: '/admin/products'
     },
     { 
       icon: <FolderOpen size={18} />, 
       label: 'Categories', 
-      onClick: () => navigate('/admin/categories') 
+      onClick: () => navigate('/admin/categories'),
+      path: '/admin/categories'
     },
     { 
       icon: <Tag size={18} />, 
       label: 'Discounts', 
-      onClick: () => navigate('/admin/discounts') 
+      onClick: () => navigate('/admin/discounts'),
+      path: '/admin/discounts'
     },
     { 
       icon: <ShoppingCart size={18} />, 
       label: 'Orders', 
-      onClick: () => navigate('/admin/orders') 
+      onClick: () => navigate('/admin/orders'),
+      path: '/admin/orders'
     },
     { 
       icon: <FileText size={18} />, 
       label: 'Invoices', 
-      onClick: () => navigate('/admin/invoices') 
+      onClick: () => navigate('/admin/invoices'),
+      path: '/admin/invoices'
     },
     { 
       icon: <Users size={18} />, 
       label: 'Students', 
-      onClick: () => navigate('/admin/students') 
+      onClick: () => navigate('/admin/students'),
+      path: '/admin/students'
     },
     { 
       icon: <BarChart3 size={18} />, 
       label: 'Reports', 
-      onClick: () => navigate('/admin/reports') 
+      onClick: () => navigate('/admin/reports'),
+      path: '/admin/reports'
     },
     { 
       icon: <TrendingUp size={18} />, 
       label: 'Price History', 
-      onClick: () => navigate('/admin/price-history') 
+      onClick: () => navigate('/admin/price-history'),
+      path: '/admin/price-history'
     },
     { 
       icon: <FileSearch size={18} />, 
       label: 'Audit Logs', 
-      onClick: () => navigate('/admin/audit-logs') 
+      onClick: () => navigate('/admin/audit-logs'),
+      path: '/admin/audit-logs'
     },
     { 
       icon: <SettingsIcon size={18} />, 
       label: 'Settings', 
-      onClick: () => navigate('/admin/settings') 
+      onClick: () => navigate('/admin/settings'),
+      path: '/admin/settings'
     }
   ];
 
@@ -300,6 +311,7 @@ function AdminLayout({ children }: AdminLayoutProps) {
             panelHeight={68}
             baseItemSize={50}
             magnification={70}
+            currentPath={location.pathname}
           />
         </div>
       )}
