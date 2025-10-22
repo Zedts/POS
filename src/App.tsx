@@ -1,4 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import './components/ToastConfig.css';
 import Dashboard from './Dashboard';
 // Admin Import Pages
 import AdminHome from './pages/admin/Home';
@@ -18,6 +20,17 @@ import EmployeeHome from './pages/employee/Home';
 function App() {
   return (
     <BrowserRouter>
+      <ToastContainer 
+        position="bottom-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
       <Routes>
         {/* Admin Routes */}
         <Route path="/" element={<Dashboard />} />

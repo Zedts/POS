@@ -1,8 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Menu, X, ShoppingCart, BarChart3, Users, Package, TrendingUp, Shield, Zap, Globe } from 'lucide-react';
 import AuthModal from './components/AuthModal';
-import { ToastContainer } from 'react-toastify';
-import './components/ToastConfig.css';
 import { isSessionValid, getUserRole } from './utils/auth';
 
 function Dashboard() {
@@ -116,19 +114,6 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--color-background)' }}>
-      {/* Toast Notification Container */}
-      <ToastContainer 
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      
       {/* Auth Modal */}
       <AuthModal 
         isOpen={authModalOpen}

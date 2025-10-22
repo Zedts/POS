@@ -179,4 +179,77 @@ export const uploadImageAPI = async (file: File) => {
   }
 };
 
+// Categories API
+export const getCategoriesListAPI = async () => {
+  try {
+    const response = await api.get("/categories");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getCategoryByIdAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/categories/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createCategoryAPI = async (categoryData: any) => {
+  try {
+    const response = await api.post("/categories", categoryData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateCategoryAPI = async (id: number, categoryData: any) => {
+  try {
+    const response = await api.put(`/categories/${id}`, categoryData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const deleteCategoryAPI = async (id: number) => {
+  try {
+    const response = await api.delete(`/categories/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getCategoryStatsAPI = async () => {
+  try {
+    const response = await api.get("/categories/stats");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getProductsByCategoryAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/categories/${id}/products`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 export default api;

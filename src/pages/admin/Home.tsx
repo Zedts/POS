@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { isSessionValid, clearSession } from '../../utils/auth';
 import { getDashboardDataAPI } from '../../api';
+import { toast } from 'react-toastify';
 import AdminLayout from './AdminLayout';
 import { 
   ShoppingCart, 
@@ -368,6 +369,7 @@ function AdminHome() {
         }
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error);
+        toast.error('Gagal memuat data dashboard');
       } finally {
         setLoading(false);
       }

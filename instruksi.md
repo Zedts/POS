@@ -28,7 +28,7 @@ Halaman untuk menampilkan dan mengelola semua produk di POS:
 # SEKARANG KERJAKAN CATEGORY MANAGEMENT
 3. Category Management
 Halaman untuk manajemen kategori produk:
-- Tambah, edit, dan hapus kategori  
+- Tambah, edit, dan hapus kategori  (proses crud, menyesuaikan database ya! tanpa data dummy (script.sql))
 - Lihat daftar produk per kategori  
 - Statistik jumlah produk dalam tiap kategori  
 
