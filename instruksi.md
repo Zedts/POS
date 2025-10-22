@@ -16,8 +16,8 @@ Halaman utama untuk ringkasan data penting:
 # SEKARANG KERJAKAN PRODUCT MANAGEMENT
 2. Products Management
 Halaman untuk menampilkan dan mengelola semua produk di POS:
-- Tambah, edit, dan hapus produk  
-- Upload / ubah gambar produk  
+- Tambah, edit, dan hapus produk (proses crud)
+- Upload / ubah gambar produk, untuk uploads memakai file import dari device user pastikan di simpan di folder uploads, untuk link url di simpan di database! (pastikan bisa upload dari storage dia, dan bisa upload dari link url, serta pastikan untu uploadnya itu nanti dia akan mengupload file ke folder uploads, setelah dari situ, pastikan nama file yang di upload sudah di fix agar bisa di tampilkan, dan ketika sudah upload pastikan ada previewnya juga. Serta ketika dalam proses delete pastikan file yang ada di folder uploads juga ikut di hapus ya!, begitupun untuk yang di database di sesuaikan saja)
 - Filter produk berdasarkan kategori  
 - Kolom stok dan harga saat ini  
 - Tombol **“View Price History”** per produk (terhubung ke `product_price_history`)  
@@ -108,4 +108,5 @@ Fitur keamanan tambahan untuk pencatatan aktivitas sistem:
 - Menampilkan siapa (admin/siswa), kapan, dan aksi apa yang dilakukan  
 - Filter berdasarkan entitas: produk, diskon, siswa, order  
 
+# PENTING!!!
 ``` Pastikan tampilannya itu responsive dengan menggunakan desain secara konsisten seperti yang sudah ada dan pastikan juga tidak ada double code atau duplicate code serta pastikan lakukan sesuai perintah tanpa ada inisiatif sendiri! Serta PASTIKAN menggunakan data asli dari database tidak menggunakan data dummy ```

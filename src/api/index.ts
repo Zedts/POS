@@ -67,4 +67,116 @@ export const getDashboardDataAPI = async () => {
   }
 };
 
+// Products API
+export const getProductsAPI = async (categoryId?: number) => {
+  try {
+    const params = categoryId ? { categoryId } : {};
+    const response = await api.get("/products", { params });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getProductByIdAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/products/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createProductAPI = async (productData: any) => {
+  try {
+    const response = await api.post("/products", productData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateProductAPI = async (id: number, productData: any) => {
+  try {
+    const response = await api.put(`/products/${id}`, productData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const deleteProductAPI = async (id: number) => {
+  try {
+    const response = await api.delete(`/products/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getCategoriesAPI = async () => {
+  try {
+    const response = await api.get("/products/categories");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getLowStockProductsAPI = async (threshold?: number) => {
+  try {
+    const params = threshold ? { threshold } : {};
+    const response = await api.get("/products/low-stock", { params });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getExpiredProductsAPI = async () => {
+  try {
+    const response = await api.get("/products/expired");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getPriceHistoryAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/products/${id}/price-history`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const uploadImageAPI = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append('image', file);
+    
+    const response = await api.post("/products/upload", formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 export default api;
