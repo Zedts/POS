@@ -232,7 +232,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
         <aside
           id="staggered-menu-panel"
           ref={panelRef}
-          className="staggered-menu-panel fixed top-0 left-0 h-full flex flex-col p-[6em_2em_2em_2em] overflow-y-auto backdrop-blur-[12px]"
+          className="staggered-menu-panel fixed top-0 left-0 h-full flex flex-col p-[8em_2em_2em_2em] overflow-y-auto backdrop-blur-[12px]"
           style={{ 
             WebkitBackdropFilter: 'blur(12px)',
             backgroundColor: 'var(--color-surface)',
@@ -288,7 +288,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
       <style>{`
 .sm-scope .staggered-menu-wrapper { position: relative; width: 100%; height: 100%; }
 .sm-scope .sm-panel-itemWrap { position: relative; overflow: hidden; line-height: 1; }
-.sm-scope .staggered-menu-panel { position: fixed; top: 0; left: 0; width: clamp(260px, 38vw, 420px); height: 100%; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 6em 2em 2em 2em; overflow-y: auto; }
+.sm-scope .staggered-menu-panel { position: fixed; top: 0; left: 0; width: clamp(260px, 38vw, 420px); height: 100%; backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); display: flex; flex-direction: column; padding: 8em 2em 2em 2em; overflow-y: auto; }
 .sm-scope .sm-prelayers { position: absolute; top: 0; left: 0; bottom: 0; width: clamp(260px, 38vw, 420px); pointer-events: none; }
 .sm-scope .sm-prelayer { position: absolute; top: 0; left: 0; height: 100%; width: 100%; transform: translateX(0); }
 .sm-scope .sm-panel-inner { flex: 1; display: flex; flex-direction: column; gap: 1.25rem; }
@@ -300,9 +300,9 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
 .sm-scope .sm-panel-item.active .sm-panel-itemLabel { color: var(--color-primary); }
 .sm-scope .sm-panel-itemLabel { display: inline-block; will-change: transform; transform-origin: 50% 100%; transition: color 0.3s ease-out; }
 .sm-scope .sm-panel-itemIcon { display: inline-flex; align-items: center; justify-center; width: 3rem; height: 3rem; border-radius: 0.75rem; transition: all 0.3s ease-out; }
-@media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; } .sm-scope .sm-prelayers { width: 100%; } }
+@media (max-width: 1024px) { .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; padding: 6em 2em 2em 2em; } .sm-scope .sm-prelayers { width: 100%; } }
 @media (max-width: 640px) { 
-  .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; padding: 4em 1.5em 2em 1.5em; } 
+  .sm-scope .staggered-menu-panel { width: 100%; left: 0; right: 0; padding: 6em 1.5em 2em 1.5em; } 
   .sm-scope .sm-prelayers { width: 100%; } 
   .sm-scope .sm-panel-item { font-size: 2rem; gap: 0.75rem; } 
   .sm-scope .sm-panel-itemIcon { width: 2.5rem; height: 2.5rem; }

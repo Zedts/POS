@@ -13,7 +13,6 @@ Halaman utama untuk ringkasan data penting:
 
 ---
 
-# SEKARANG KERJAKAN PRODUCT MANAGEMENT
 2. Products Management
 Halaman untuk menampilkan dan mengelola semua produk di POS:
 - Tambah, edit, dan hapus produk (proses crud)
@@ -26,6 +25,7 @@ Halaman untuk menampilkan dan mengelola semua produk di POS:
 
 ---
 
+# SEKARANG KERJAKAN CATEGORY MANAGEMENT
 3. Category Management
 Halaman untuk manajemen kategori produk:
 - Tambah, edit, dan hapus kategori  
