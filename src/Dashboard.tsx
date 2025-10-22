@@ -3,12 +3,21 @@ import { Menu, X, ShoppingCart, BarChart3, Users, Package, TrendingUp, Shield, Z
 import AuthModal from './components/AuthModal';
 import { ToastContainer } from 'react-toastify';
 import './components/ToastConfig.css';
+import { isSessionValid, getUserRole } from './utils/auth';
 
 function Dashboard() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [authModalOpen, setAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState<'login' | 'register'>('login');
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isSessionValid()) {
+      const role = getUserRole();
+      setUserRole(role);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -33,6 +42,25 @@ function Dashboard() {
   const openAuthModal = (mode: 'login' | 'register') => {
     setAuthMode(mode);
     setAuthModalOpen(true);
+  };
+
+  const handleButtonClick = () => {
+    if (userRole === 'admin') {
+      window.location.href = '/admin/home';
+    } else if (userRole === 'employee') {
+      window.location.href = '/employee/home';
+    } else {
+      openAuthModal('login');
+    }
+  };
+
+  const getButtonText = () => {
+    if (userRole === 'admin') {
+      return 'Admin';
+    } else if (userRole === 'employee') {
+      return 'Employee';
+    }
+    return 'Mulai';
   };
 
   const features = [
@@ -138,11 +166,11 @@ function Dashboard() {
                 Harga
               </a>
               <button 
-                onClick={() => openAuthModal('login')}
+                onClick={handleButtonClick}
                 className="text-white px-6 py-2.5 rounded-lg transition-all hover:shadow-lg" 
                 style={{ backgroundColor: 'var(--color-primary)' }}
               >
-                Mulai
+                {getButtonText()}
               </button>
             </div>
 
@@ -170,11 +198,11 @@ function Dashboard() {
                   Harga
                 </a>
                 <button 
-                  onClick={() => openAuthModal('login')}
+                  onClick={handleButtonClick}
                   className="text-white px-6 py-2.5 rounded-lg transition-all" 
                   style={{ backgroundColor: 'var(--color-primary)' }}
                 >
-                  Mulai Gratis
+                  {getButtonText()}
                 </button>
               </div>
             </div>
@@ -200,24 +228,26 @@ function Dashboard() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <button 
-                onClick={() => openAuthModal('login')}
+                onClick={handleButtonClick}
                 className="text-white px-8 py-4 rounded-lg text-lg font-semibold transition-all hover:shadow-xl transform hover:-translate-y-0.5" 
                 style={{ backgroundColor: 'var(--color-primary)' }}
               >
-                Masuk Sekarang
+                {userRole ? (userRole === 'admin' ? 'Dashboard Admin' : 'Dashboard Employee') : 'Masuk Sekarang'}
               </button>
-              <button 
-                onClick={() => openAuthModal('register')}
-                className="border-2 px-8 py-4 rounded-lg text-lg font-semibold transition-all" 
-                style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }} 
-                onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-light)'} 
-                onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
-              >
-                Register
-              </button>
+              {!userRole && (
+                <button 
+                  onClick={() => openAuthModal('register')}
+                  className="border-2 px-8 py-4 rounded-lg text-lg font-semibold transition-all" 
+                  style={{ borderColor: 'var(--color-primary)', color: 'var(--color-primary)' }} 
+                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--color-primary-light)'} 
+                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}
+                >
+                  Register
+                </button>
+              )}
             </div>
             <p className="mt-6 text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-              Tidak perlu kartu kredit • Setup 5 menit • Support 24/7
+              {userRole ? `Selamat datang kembali, ${userRole === 'admin' ? 'Admin' : 'Employee'}!` : 'Tidak perlu kartu kredit • Setup 5 menit • Support 24/7'}
             </p>
           </div>
         </div>

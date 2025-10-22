@@ -1,17 +1,14 @@
 import { useEffect } from 'react';
-import { isSessionValid, clearSession, getUserData } from '../../utils/auth';
+import { isSessionValid, clearSession } from '../../utils/auth';
 import AdminLayout from './AdminLayout';
 
-function AdminHome() {
+function Students() {
   useEffect(() => {
     if (!isSessionValid()) {
       clearSession();
       window.location.href = '/';
       return;
     }
-
-    const userData = getUserData();
-    console.log('Admin User Data:', userData);
   }, []);
 
   return (
@@ -20,7 +17,7 @@ function AdminHome() {
         <div className="max-w-7xl mx-auto">
           <div className="p-6 rounded-lg" style={{ backgroundColor: 'var(--color-surface)' }}>
             <p style={{ color: 'var(--color-text-secondary)' }}>
-              Selamat datang di halaman admin POS Pro
+              Halaman Student Management
             </p>
           </div>
         </div>
@@ -29,4 +26,4 @@ function AdminHome() {
   );
 }
 
-export default AdminHome;
+export default Students;
