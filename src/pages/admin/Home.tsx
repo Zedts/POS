@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { isSessionValid, clearSession } from '../../utils/auth';
 import { getDashboardDataAPI } from '../../api';
 import AdminLayout from './AdminLayout';
@@ -9,7 +10,8 @@ import {
   Users, 
   TrendingUp,
   AlertCircle,
-  Tag
+  Tag,
+  ChevronRight
 } from 'lucide-react';
 import {
   Chart as ChartJS,
@@ -21,7 +23,8 @@ import {
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  Filler
 } from 'chart.js';
 import { Line, Doughnut } from 'react-chartjs-2';
 
@@ -34,7 +37,8 @@ ChartJS.register(
   Tooltip,
   Legend,
   ArcElement,
-  BarElement
+  BarElement,
+  Filler
 );
 
 interface StatsCard {
@@ -43,6 +47,7 @@ interface StatsCard {
   icon: React.ReactNode;
   color: string;
   trend?: string;
+  link: string;
 }
 
 interface RecentOrder {
@@ -74,28 +79,32 @@ function AdminHome() {
       value: '0',
       icon: <ShoppingCart className="w-6 h-6" />,
       color: 'var(--color-primary)',
-      trend: '+0%'
+      trend: '+0%',
+      link: '/admin/invoices'
     },
     {
       title: 'Total Pendapatan',
       value: 'Rp 0',
       icon: <DollarSign className="w-6 h-6" />,
       color: '#10b981',
-      trend: '+0%'
+      trend: '+0%',
+      link: '/admin/reports'
     },
     {
       title: 'Stok Tersisa',
       value: '0',
       icon: <Package className="w-6 h-6" />,
       color: '#f59e0b',
-      trend: '0 produk'
+      trend: '0 produk',
+      link: '/admin/products'
     },
     {
       title: 'Siswa Aktif',
       value: '0',
       icon: <Users className="w-6 h-6" />,
       color: '#6366f1',
-      trend: 'bertugas'
+      trend: 'bertugas',
+      link: '/admin/students'
     }
   ]);
 
@@ -225,28 +234,32 @@ function AdminHome() {
               value: data.stats.todayTransactions.toString(),
               icon: <ShoppingCart className="w-6 h-6" />,
               color: 'rgb(34, 197, 94)',
-              trend: `${data.stats.monthTransactions} bulan ini`
+              trend: `Transaksi`,
+              link: '/admin/invoices'
             },
             {
               title: 'Total Pendapatan',
               value: `Rp ${new Intl.NumberFormat('id-ID').format(data.stats.todayRevenue)}`,
               icon: <DollarSign className="w-6 h-6" />,
               color: 'rgb(59, 130, 246)',
-              trend: `Rp ${new Intl.NumberFormat('id-ID').format(data.stats.monthRevenue)} bulan ini`
+              trend: `Pendapatan`,
+              link: '/admin/reports'
             },
             {
               title: 'Stok Menipis',
               value: data.stats.lowStockCount.toString(),
               icon: <Package className="w-6 h-6" />,
               color: 'rgb(249, 115, 22)',
-              trend: 'produk'
+              trend: 'stok',
+              link: '/admin/products'
             },
             {
               title: 'Siswa Aktif',
               value: data.stats.activeStudents.toString(),
               icon: <Users className="w-6 h-6" />,
               color: 'rgb(168, 85, 247)',
-              trend: 'bertugas'
+              trend: 'bertugas',
+              link: '/admin/students'
             }
           ]);
 
@@ -396,7 +409,7 @@ function AdminHome() {
                   borderColor: 'var(--color-border)'
                 }}
               >
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-2">
                   <div
                     className="p-3 rounded-lg"
                     style={{
@@ -406,7 +419,16 @@ function AdminHome() {
                   >
                     {stat.icon}
                   </div>
-                  {stat.trend && (
+                  <Link 
+                    to={stat.link} 
+                    className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                    style={{ color: 'var(--color-primary)' }}
+                  >
+                    View All <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </div>
+                {stat.trend && (
+                  <div className="mb-2">
                     <span
                       className="text-sm font-semibold flex items-center gap-1"
                       style={{ color: stat.color }}
@@ -414,8 +436,8 @@ function AdminHome() {
                       <TrendingUp className="w-4 h-4" />
                       {stat.trend}
                     </span>
-                  )}
-                </div>
+                  </div>
+                )}
                 <h3 className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
                   {stat.title}
                 </h3>
@@ -436,9 +458,18 @@ function AdminHome() {
                 borderColor: 'var(--color-border)'
               }}
             >
-              <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-                Grafik Penjualan Per Minggu
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  Grafik Penjualan Per Minggu
+                </h2>
+                <Link 
+                  to="/admin/reports" 
+                  className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
               <div style={{ height: '300px' }}>
                 <Line data={salesChartData} options={getChartOptions()} />
               </div>
@@ -452,9 +483,18 @@ function AdminHome() {
                 borderColor: 'var(--color-border)'
               }}
             >
-              <h2 className="text-lg font-semibold mb-4" style={{ color: 'var(--color-text-primary)' }}>
-                Penjualan Per Kategori
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                  Penjualan Per Kategori
+                </h2>
+                <Link 
+                  to="/admin/categories" 
+                  className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
               <div style={{ height: '300px' }}>
                 <Doughnut data={categoryChartData} options={getDoughnutOptions()} />
               </div>
@@ -471,10 +511,19 @@ function AdminHome() {
                 borderColor: 'var(--color-border)'
               }}
             >
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-                <ShoppingCart className="w-5 h-5" />
-                Order Terbaru
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                  <ShoppingCart className="w-5 h-5" />
+                  Order Terbaru
+                </h2>
+                <Link 
+                  to="/admin/orders" 
+                  className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
               {recentOrders.length === 0 ? (
                 <div className="text-center py-8">
                   <AlertCircle className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--color-text-secondary)' }} />
@@ -527,10 +576,19 @@ function AdminHome() {
                 borderColor: 'var(--color-border)'
               }}
             >
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-                <TrendingUp className="w-5 h-5" />
-                Produk Terlaris
-              </h2>
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                  <TrendingUp className="w-5 h-5" />
+                  Produk Terlaris
+                </h2>
+                <Link 
+                  to="/admin/products" 
+                  className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  View All <ChevronRight className="h-4 w-4" />
+                </Link>
+              </div>
               {topProducts.length === 0 ? (
                 <div className="text-center py-8">
                   <Package className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--color-text-secondary)' }} />
@@ -577,10 +635,19 @@ function AdminHome() {
               borderColor: 'var(--color-border)'
             }}
           >
-            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
-              <Tag className="w-5 h-5" />
-              Diskon Aktif
-            </h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <Tag className="w-5 h-5" />
+                Diskon Aktif
+              </h2>
+              <Link 
+                to="/admin/discounts" 
+                className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                View All <ChevronRight className="h-4 w-4" />
+              </Link>
+            </div>
             {activeDiscounts.length === 0 ? (
               <div className="text-center py-8">
                 <Tag className="w-12 h-12 mx-auto mb-3" style={{ color: 'var(--color-text-secondary)' }} />

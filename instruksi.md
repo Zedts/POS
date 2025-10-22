@@ -1,6 +1,5 @@
 ### Ini adalah fitur dari masing masing halaman, coba kamu kembangkan dari masing masing halaman dan pastikan kamu menggunakan desain dan struktur secara konsisten, kerjakan 1 per 1
 
-# KERJAKAN HOME DAHULU!!!
 1. Home (Dashboard)
 Halaman utama untuk ringkasan data penting:
 - Total transaksi hari ini & bulan ini (gunakan line chart dari "npm i chart.js" serta gunakan juga chart donat)
@@ -14,6 +13,7 @@ Halaman utama untuk ringkasan data penting:
 
 ---
 
+# SEKARANG KERJAKAN PRODUCT MANAGEMENT
 2. Products Management
 Halaman untuk menampilkan dan mengelola semua produk di POS:
 - Tambah, edit, dan hapus produk  
