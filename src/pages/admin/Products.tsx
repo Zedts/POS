@@ -72,6 +72,8 @@ function Products() {
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<{ id: number; name: string } | null>(null);
   const [formData, setFormData] = useState({
     product_name: '',
     category_id: '',
@@ -154,7 +156,7 @@ function Products() {
       if (product.picture_url) {
         const previewUrl = product.picture_url.startsWith('http') 
           ? product.picture_url 
-          : `http://172.11.13.240:3000${product.picture_url}`;
+          : `http://172.11.10.11:3000${product.picture_url}`;
         setImagePreview(previewUrl);
       }
       setSelectedFile(null);
@@ -250,7 +252,7 @@ function Products() {
         picture_url: pictureUrl,
         category_id: parseInt(formData.category_id),
         qty: parseInt(formData.qty) || 0,
-        price: parseFloat(formData.price),
+        price: parseInt(formData.price),
         exp_date: formData.exp_date || null
       };
 
@@ -275,14 +277,25 @@ function Products() {
     }
   };
 
-  const handleDelete = async (id: number, name: string) => {
-    if (!confirm(`Yakin ingin menghapus produk "${name}"?`)) return;
+  const handleOpenDeleteModal = (id: number, name: string) => {
+    setProductToDelete({ id, name });
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!productToDelete) return;
 
     try {
-      const res = await deleteProductAPI(id);
+      const res = await deleteProductAPI(productToDelete.id);
       if (res.success) {
         toast.success('Produk berhasil dihapus');
         fetchData();
+        handleCloseDeleteModal();
       }
     } catch (error) {
       const err = error as { message?: string };
@@ -462,7 +475,7 @@ function Products() {
                         <td className="px-4 py-3">
                           {product.picture_url ? (
                             <img
-                              src={product.picture_url.startsWith('http') ? product.picture_url : `http://172.11.13.240:3000${product.picture_url}`}
+                              src={product.picture_url.startsWith('http') ? product.picture_url : `http://172.11.10.11:3000${product.picture_url}`}
                               alt={product.product_name}
                               className="w-12 h-12 object-cover rounded"
                             />
@@ -513,7 +526,7 @@ function Products() {
                               <Edit className="w-4 h-4 text-green-600" />
                             </button>
                             <button
-                              onClick={() => handleDelete(product.id, product.product_name)}
+                              onClick={() => handleOpenDeleteModal(product.id, product.product_name)}
                               className="p-1 rounded hover:bg-opacity-10 hover:bg-red-600"
                               title="Hapus"
                             >
@@ -622,7 +635,7 @@ function Products() {
                         color: 'var(--color-text-primary)'
                       }}
                       min="0"
-                      step="0.01"
+                      step="1"
                       required
                     />
                   </div>
@@ -893,6 +906,74 @@ function Products() {
                   ))}
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && productToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={handleCloseDeleteModal}
+        >
+          <div
+            className="rounded-lg shadow-xl max-w-md w-full"
+            style={{ backgroundColor: 'var(--color-surface)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <h3 className="text-xl font-semibold" style={{ color: 'var(--color-danger)' }}>
+                Konfirmasi Hapus
+              </h3>
+              <button
+                onClick={handleCloseDeleteModal}
+                className="p-1 rounded hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+                  <Trash2 size={24} style={{ color: 'var(--color-danger)' }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base mb-2" style={{ color: 'var(--color-text-primary)' }}>
+                    Apakah Anda yakin ingin menghapus produk <span className="font-semibold">"{productToDelete.name}"</span>?
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCloseDeleteModal}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-80"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text-primary)' 
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-90"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface)', 
+                    borderColor: 'var(--color-danger)',
+                    color: 'var(--color-danger)'
+                  }}
+                >
+                  Hapus
+                </button>
+              </div>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isSessionValid, clearSession } from '../../utils/auth';
 import AdminLayout from './AdminLayout';
 import {
@@ -48,6 +48,8 @@ function Categories() {
   const [expandedCategory, setExpandedCategory] = useState<number | null>(null);
   const [categoryProducts, setCategoryProducts] = useState<{ [key: number]: Product[] }>({});
   const [loadingProducts, setLoadingProducts] = useState<{ [key: number]: boolean }>({});
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<{ id: number; name: string } | null>(null);
 
   useEffect(() => {
     if (!isSessionValid()) {
@@ -121,16 +123,25 @@ function Categories() {
     }
   };
 
-  const handleDelete = async (id: number, categoryName: string) => {
-    if (!window.confirm(`Apakah Anda yakin ingin menghapus kategori "${categoryName}"?`)) {
-      return;
-    }
+  const handleOpenDeleteModal = (id: number, categoryName: string) => {
+    setCategoryToDelete({ id, name: categoryName });
+    setShowDeleteModal(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setCategoryToDelete(null);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!categoryToDelete) return;
 
     try {
-      const response = await deleteCategoryAPI(id);
+      const response = await deleteCategoryAPI(categoryToDelete.id);
       if (response.success) {
         toast.success('Kategori berhasil dihapus');
         fetchCategories();
+        handleCloseDeleteModal();
       }
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
@@ -231,9 +242,8 @@ function Categories() {
                   </thead>
                   <tbody>
                     {categories.map((category, index) => (
-                      <>
+                      <React.Fragment key={category.id}>
                         <tr
-                          key={category.id}
                           style={{
                             borderBottom: '1px solid var(--color-border)',
                             backgroundColor: index % 2 === 0 ? 'transparent' : 'var(--color-background)',
@@ -278,16 +288,24 @@ function Categories() {
                             <div className="flex items-center justify-center gap-2">
                               <button
                                 onClick={() => handleOpenModal('edit', category)}
-                                className="p-2 rounded hover:opacity-80 transition-opacity"
-                                style={{ backgroundColor: 'var(--color-warning)', color: 'white' }}
+                                className="p-2 rounded border hover:opacity-80 transition-opacity"
+                                style={{ 
+                                  backgroundColor: 'var(--color-surface)', 
+                                  borderColor: 'var(--color-border)',
+                                  color: 'var(--color-text-primary)'
+                                }}
                                 title="Edit"
                               >
                                 <Edit2 size={16} />
                               </button>
                               <button
-                                onClick={() => handleDelete(category.id, category.category_name)}
-                                className="p-2 rounded hover:opacity-80 transition-opacity"
-                                style={{ backgroundColor: 'var(--color-danger)', color: 'white' }}
+                                onClick={() => handleOpenDeleteModal(category.id, category.category_name)}
+                                className="p-2 rounded border hover:opacity-80 transition-opacity"
+                                style={{ 
+                                  backgroundColor: 'var(--color-surface)', 
+                                  borderColor: 'var(--color-danger)',
+                                  color: 'var(--color-danger)'
+                                }}
                                 title="Hapus"
                               >
                                 <Trash2 size={16} />
@@ -342,7 +360,7 @@ function Categories() {
                             </td>
                           </tr>
                         )}
-                      </>
+                      </React.Fragment>
                     ))}
                   </tbody>
                 </table>
@@ -352,43 +370,63 @@ function Categories() {
 
           {/* Summary Stats */}
           <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface)' }}>
-              <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
-                Total Kategori
-              </h3>
-              <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
-                {categories.length}
-              </p>
+            <div className="p-4 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(1, 159, 99, 0.1)' }}>
+                  <Package size={20} style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Total Kategori</p>
+                  <p className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                    {categories.length}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface)' }}>
-              <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
-                Total Produk
-              </h3>
-              <p className="text-2xl font-bold" style={{ color: 'var(--color-success)' }}>
-                {categories.reduce((sum, cat) => sum + cat.product_count, 0)}
-              </p>
+            <div className="p-4 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}>
+                  <Package size={20} className="text-green-600" />
+                </div>
+                <div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Total Produk</p>
+                  <p className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                    {categories.reduce((sum, cat) => sum + cat.product_count, 0)}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface)' }}>
-              <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
-                Total Stok
-              </h3>
-              <p className="text-2xl font-bold" style={{ color: 'var(--color-warning)' }}>
-                {categories.reduce((sum, cat) => sum + cat.total_stock, 0)}
-              </p>
+            <div className="p-4 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(234, 179, 8, 0.1)' }}>
+                  <TrendingUp size={20} className="text-yellow-600" />
+                </div>
+                <div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Total Stok</p>
+                  <p className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                    {categories.reduce((sum, cat) => sum + cat.total_stock, 0)}
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="p-4 rounded-lg" style={{ backgroundColor: 'var(--color-surface)' }}>
-              <h3 className="text-sm font-medium mb-2" style={{ color: 'var(--color-text-secondary)' }}>
-                Kategori Terbesar
-              </h3>
-              <p className="text-lg font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
-                {categories.length > 0 ? categories.reduce((prev, current) => prev.product_count > current.product_count ? prev : current).category_name : '-'}
-              </p>
+            <div className="p-4 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center gap-3">
+                <div className="p-2 rounded-lg" style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}>
+                  <TrendingUp size={20} className="text-blue-600" />
+                </div>
+                <div>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>Kategori Terbesar</p>
+                  <p className="text-base font-bold truncate" style={{ color: 'var(--color-text-primary)' }}>
+                    {categories.length > 0 ? categories.reduce((prev, current) => prev.product_count > current.product_count ? prev : current).category_name : '-'}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Add/Edit Modal */}
       {showModal && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4"
@@ -437,8 +475,12 @@ function Categories() {
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 rounded font-medium transition-all hover:opacity-80"
-                  style={{ backgroundColor: 'var(--color-background)', color: 'var(--color-text-primary)' }}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-80"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text-primary)' 
+                  }}
                 >
                   Batal
                 </button>
@@ -451,6 +493,74 @@ function Categories() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && categoryToDelete && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          onClick={handleCloseDeleteModal}
+        >
+          <div
+            className="rounded-lg shadow-xl max-w-md w-full"
+            style={{ backgroundColor: 'var(--color-surface)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <h3 className="text-xl font-semibold" style={{ color: 'var(--color-danger)' }}>
+                Konfirmasi Hapus
+              </h3>
+              <button
+                onClick={handleCloseDeleteModal}
+                className="p-1 rounded hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+                  <Trash2 size={24} style={{ color: 'var(--color-danger)' }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base mb-2" style={{ color: 'var(--color-text-primary)' }}>
+                    Apakah Anda yakin ingin menghapus kategori ini <span className="font-semibold">"{categoryToDelete.name}"</span>?
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCloseDeleteModal}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-80"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text-primary)' 
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmDelete}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-90"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface)', 
+                    borderColor: 'var(--color-danger)',
+                    color: 'var(--color-danger)'
+                  }}
+                >
+                  Hapus
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getToken } from "../utils/auth";
 
-const API_URL = "http://172.11.13.240:3000/api";
+const API_URL = "http://172.11.10.11:3000/api";
 
 // Create axios instance
 const api = axios.create({
