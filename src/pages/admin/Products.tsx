@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { isSessionValid, clearSession } from '../../utils/auth';
 import AdminLayout from './AdminLayout';
+import PriceHistoryModal from '../../components/PriceHistoryModal';
 import {
   getProductsAPI,
   createProductAPI,
   updateProductAPI,
   deleteProductAPI,
   getCategoriesAPI,
-  getPriceHistoryAPI,
   uploadImageAPI
 } from '../../api';
 import { toast } from 'react-toastify';
@@ -48,15 +48,6 @@ interface Category {
   category_name: string;
 }
 
-interface PriceHistory {
-  id: number;
-  product_id: number;
-  old_price: number;
-  new_price: number;
-  changed_at: string;
-  changed_by_name: string;
-}
-
 function Products() {
   const [loading, setLoading] = useState(true);
   const [products, setProducts] = useState<Product[]>([]);
@@ -65,9 +56,8 @@ function Products() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [showPriceHistory, setShowPriceHistory] = useState(false);
+  const [selectedProductIdForHistory, setSelectedProductIdForHistory] = useState<number | null>(null);
   const [editMode, setEditMode] = useState(false);
-  const [priceHistory, setPriceHistory] = useState<PriceHistory[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [uploadMode, setUploadMode] = useState<'file' | 'url'>('file');
@@ -303,18 +293,8 @@ function Products() {
     }
   };
 
-  const handleViewPriceHistory = async (product: Product) => {
-    try {
-      const res = await getPriceHistoryAPI(product.id);
-      if (res.success) {
-        setPriceHistory(res.data);
-        setSelectedProduct(product);
-        setShowPriceHistory(true);
-      }
-    } catch (error) {
-      const err = error as { message?: string };
-      toast.error(err.message || 'Gagal memuat riwayat harga');
-    }
+  const handleViewPriceHistory = (productId: number) => {
+    setSelectedProductIdForHistory(productId);
   };
 
   if (loading) {
@@ -512,7 +492,7 @@ function Products() {
                         <td className="px-4 py-3">
                           <div className="flex items-center gap-2">
                             <button
-                              onClick={() => handleViewPriceHistory(product)}
+                              onClick={() => handleViewPriceHistory(product.id)}
                               className="p-1 rounded hover:bg-opacity-10 hover:bg-blue-600"
                               title="Lihat Riwayat Harga"
                             >
@@ -851,64 +831,11 @@ function Products() {
       )}
 
       {/* Price History Modal */}
-      {showPriceHistory && selectedProduct && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style={{ zIndex: 9999 }}>
-          <div className="rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto" style={{ backgroundColor: 'var(--color-surface)' }}>
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <div>
-                  <h2 className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                    Riwayat Harga
-                  </h2>
-                  <p style={{ color: 'var(--color-text-secondary)' }}>{selectedProduct.product_name}</p>
-                </div>
-                <button onClick={() => setShowPriceHistory(false)} className="p-1 hover:opacity-70">
-                  <X className="w-6 h-6" style={{ color: 'var(--color-text-primary)' }} />
-                </button>
-              </div>
-
-              {priceHistory.length === 0 ? (
-                <div className="text-center py-8">
-                  <History className="w-12 h-12 mx-auto mb-2 opacity-50" style={{ color: 'var(--color-text-secondary)' }} />
-                  <p style={{ color: 'var(--color-text-secondary)' }}>Belum ada riwayat perubahan harga</p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {priceHistory.map((history) => (
-                    <div
-                      key={history.id}
-                      className="p-4 rounded-lg border"
-                      style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)' }}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <p className="font-medium" style={{ color: 'var(--color-text-primary)' }}>
-                            Rp {history.old_price.toLocaleString()} → Rp {history.new_price.toLocaleString()}
-                          </p>
-                          <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                            Diubah oleh: {history.changed_by_name}
-                          </p>
-                        </div>
-                        <span
-                          className="px-2 py-1 text-xs rounded"
-                          style={{
-                            backgroundColor: history.new_price > history.old_price ? 'rgba(239, 68, 68, 0.1)' : 'rgba(34, 197, 94, 0.1)',
-                            color: history.new_price > history.old_price ? '#dc2626' : '#16a34a'
-                          }}
-                        >
-                          {history.new_price > history.old_price ? 'Naik' : 'Turun'} Rp {Math.abs(history.new_price - history.old_price).toLocaleString()}
-                        </span>
-                      </div>
-                      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
-                        {new Date(history.changed_at).toLocaleString('id-ID')}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+      {selectedProductIdForHistory && (
+        <PriceHistoryModal
+          productId={selectedProductIdForHistory}
+          onClose={() => setSelectedProductIdForHistory(null)}
+        />
       )}
 
       {/* Delete Confirmation Modal */}

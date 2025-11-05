@@ -71,7 +71,6 @@ Halaman untuk manajemen data siswa sebagai operator POS:
 
 ---
 
-# SEKARANG KERJAKAN REPORT CENTER
 8. Report Center (Laporan & Statistik), intinya page ini berisi diagram digram untuk tiap laporannya beserta detailnya (yang bisa mengarah ke halaman yang sesuai dengan laporannya, misal produk terlaris maka di terdapat tombol view detail yang di arahkan ke halaman produk, dan lain sebagainya)
 Pusat laporan keuangan dan aktivitas POS:
 - Laporan Penjualan Harian / Mingguan / Bulanan  
@@ -83,11 +82,12 @@ Pusat laporan keuangan dan aktivitas POS:
 
 ---
 
+# SEKARANG KERJAKAN PRICE HISTORY
 9. Price History
 Halaman untuk menampilkan riwayat harga dari tabel `product_price_history`:
 - Riwayat perubahan harga per produk (kapan diubah, oleh siapa)  
 - Komparasi harga lama dan harga baru  
-- Grafik tren perubahan harga per produk  
+- Grafik tren perubahan harga per produk  (bebas menggunakan grafik dengan chart / diagram apa, yang penting terlihat profesional ya!)
 
 ---
 

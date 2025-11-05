@@ -549,4 +549,27 @@ export const getStudentRevenueByMajorAPI = async (startDate: string, endDate: st
   }
 };
 
+// Price History API
+export const getAllProductsWithPriceHistoryAPI = async (filters?: { search?: string; categoryId?: number; startDate?: string; endDate?: string }) => {
+  try {
+    const response = await api.get('/price-history/products', {
+      params: filters
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch products with price history" };
+  }
+};
+
+export const getPriceHistoryByProductAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/price-history/product/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch price history" };
+  }
+};
+
 export default api;
