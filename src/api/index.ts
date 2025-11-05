@@ -572,4 +572,26 @@ export const getPriceHistoryByProductAPI = async (id: number) => {
   }
 };
 
+// Audit Logs API
+export const getAuditLogsAPI = async (filters?: {
+  userType?: string;
+  entityType?: string;
+  action?: string;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  try {
+    const response = await api.get('/audit-logs', {
+      params: filters
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch audit logs" };
+  }
+};
+
 export default api;

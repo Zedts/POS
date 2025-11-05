@@ -82,7 +82,6 @@ Pusat laporan keuangan dan aktivitas POS:
 
 ---
 
-# SEKARANG KERJAKAN PRICE HISTORY
 9. Price History
 Halaman untuk menampilkan riwayat harga dari tabel `product_price_history`:
 - Riwayat perubahan harga per produk (kapan diubah, oleh siapa)  
@@ -95,14 +94,14 @@ Halaman untuk menampilkan riwayat harga dari tabel `product_price_history`:
 Halaman untuk konfigurasi dasar sistem POS:
 - Edit profil admin (username, password)  
 - Atur format tanggal & waktu  
-- Atur logo sekolah, nama sistem, dan informasi footer  
-- Fitur **Backup / Restore Database** (opsional)  
-- Kelola **Return & Refund Policies**  
+- Fitur **Backup / Restore Database** (tampilan saja, fungsinya nanti)  
+- Kelola **Return & Refund Policies**  (tampilan saja, fungsinya nanti)  
 - Manajemen metode pembayaran (cash, QR, e-money, dll)  
 
 ---
 
-11. Audit Logs (Opsional tapi Direkomendasikan)
+# SEKARANG KERJAKAN AUDIT LOGS
+11. Audit Logs (intinya berisi logs logs yang dilakukan oleh admin, berkaitan dengan CRUD pastinya tiap ada proses pasti dimasukan ke dalam logs ini)
 Fitur keamanan tambahan untuk pencatatan aktivitas sistem:
 - Menyimpan semua aktivitas penting (produk ditambah, dihapus, harga diubah, diskon dibuat, dll.)  
 - Menampilkan siapa (admin/siswa), kapan, dan aksi apa yang dilakukan  
