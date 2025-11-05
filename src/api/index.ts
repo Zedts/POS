@@ -372,4 +372,42 @@ export const updateOrderStatusAPI = async (orderNumber: string, status: string) 
   }
 };
 
+// Invoices API
+export const getInvoicesAPI = async (filters?: { startDate?: string; endDate?: string; invoiceNumber?: string; status?: string; paidBy?: string }) => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.startDate) params.append('startDate', filters.startDate);
+    if (filters?.endDate) params.append('endDate', filters.endDate);
+    if (filters?.invoiceNumber) params.append('invoiceNumber', filters.invoiceNumber);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.paidBy) params.append('paidBy', filters.paidBy);
+    
+    const response = await api.get(`/invoices${params.toString() ? `?${params.toString()}` : ''}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getInvoiceByNumberAPI = async (invoiceNumber: string) => {
+  try {
+    const response = await api.get(`/invoices/${invoiceNumber}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getInvoiceStatsAPI = async () => {
+  try {
+    const response = await api.get('/invoices/stats');
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 export default api;

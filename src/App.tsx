@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './components/ToastConfig.css';
 import Dashboard from './Dashboard';
+
 // Admin Import Pages
 import AdminHome from './pages/admin/Home';
 import Products from './pages/admin/Products';
@@ -14,6 +15,7 @@ import Reports from './pages/admin/Reports';
 import PriceHistory from './pages/admin/PriceHistory';
 import Settings from './pages/admin/Settings';
 import AuditLogs from './pages/admin/AuditLogs';
+
 // Employee Import Pages
 import EmployeeHome from './pages/employee/Home';
 

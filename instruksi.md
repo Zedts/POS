@@ -57,7 +57,7 @@ Halaman untuk memantau aktivitas transaksi siswa POS:
 Halaman monitoring semua invoice yang sudah dibuat:
 - Daftar invoice berdasarkan **invoice_status** (diproses, berhasil, gagal)  
 - Tampilkan total, diskon, dan metode pembayaran (**paid_by**)  
-- Fitur **“View Receipt”** untuk cetak invoice  
+- Fitur **“View Receipt”** untuk cetak invoice  (fungsinya mirip mirip seperti yang ada di orders & sales management untuk print invoice nya, kamu bisa cek https://invoice-generator.com/?locale=en di web untuk melihat template invoice invoice yang ada)
 - Relasi langsung dengan `orders` untuk keperluan audit  
 
 ---
