@@ -478,4 +478,75 @@ export const toggleStudentStatusAPI = async (id: number) => {
   }
 };
 
+// Reports API
+export const getSalesReportAPI = async (startDate: string, endDate: string) => {
+  try {
+    const response = await api.get('/reports/sales', {
+      params: { startDate, endDate }
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch sales report" };
+  }
+};
+
+export const getTopProductsAPI = async (startDate: string, endDate: string) => {
+  try {
+    const response = await api.get('/reports/top-products', {
+      params: { startDate, endDate }
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch top products" };
+  }
+};
+
+export const getDiscountUsageAPI = async (startDate: string, endDate: string) => {
+  try {
+    const response = await api.get('/reports/discount-usage', {
+      params: { startDate, endDate }
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch discount usage" };
+  }
+};
+
+export const getStockStatusAPI = async () => {
+  try {
+    const response = await api.get('/reports/stock-status');
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch stock status" };
+  }
+};
+
+export const getStudentRevenueByClassAPI = async (startDate: string, endDate: string) => {
+  try {
+    const response = await api.get('/reports/student-revenue/class', {
+      params: { startDate, endDate }
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch student revenue by class" };
+  }
+};
+
+export const getStudentRevenueByMajorAPI = async (startDate: string, endDate: string) => {
+  try {
+    const response = await api.get('/reports/student-revenue/major', {
+      params: { startDate, endDate }
+    });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Failed to fetch student revenue by major" };
+  }
+};
+
 export default api;

@@ -72,7 +72,7 @@ Halaman untuk manajemen data siswa sebagai operator POS:
 ---
 
 # SEKARANG KERJAKAN REPORT CENTER
-8. Report Center (Laporan & Statistik)
+8. Report Center (Laporan & Statistik), intinya page ini berisi diagram digram untuk tiap laporannya beserta detailnya (yang bisa mengarah ke halaman yang sesuai dengan laporannya, misal produk terlaris maka di terdapat tombol view detail yang di arahkan ke halaman produk, dan lain sebagainya)
 Pusat laporan keuangan dan aktivitas POS:
 - Laporan Penjualan Harian / Mingguan / Bulanan  
 - Laporan Produk Terlaris  
