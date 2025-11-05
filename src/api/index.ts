@@ -410,4 +410,72 @@ export const getInvoiceStatsAPI = async () => {
   }
 };
 
+// Student API
+export const getStudentsAPI = async (filters?: { class?: string; major?: string; status?: string; search?: string }) => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.class) params.append('class', filters.class);
+    if (filters?.major) params.append('major', filters.major);
+    if (filters?.status) params.append('status', filters.status);
+    if (filters?.search) params.append('search', filters.search);
+    
+    const response = await api.get(`/students?${params.toString()}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getStudentByIdAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/students/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getStudentTransactionsAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/students/${id}/transactions`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getStudentStatsAPI = async () => {
+  try {
+    const response = await api.get('/students/stats');
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateStudentAPI = async (id: number, studentData: any) => {
+  try {
+    const response = await api.put(`/students/${id}`, studentData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const toggleStudentStatusAPI = async (id: number) => {
+  try {
+    const response = await api.patch(`/students/${id}/toggle-status`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 export default api;

@@ -52,7 +52,6 @@ Halaman untuk memantau aktivitas transaksi siswa POS:
 
 ---
 
-# SEKARANG KERJAKAN INVOICE MANAGEMENT
 6. Invoice Management
 Halaman monitoring semua invoice yang sudah dibuat:
 - Daftar invoice berdasarkan **invoice_status** (diproses, berhasil, gagal)  
@@ -62,6 +61,7 @@ Halaman monitoring semua invoice yang sudah dibuat:
 
 ---
 
+# SEKARANG KERJAKAN STUDENT MANAGEMENT
 7. Student Management
 Halaman untuk manajemen data siswa sebagai operator POS:
 - Daftar seluruh siswa aktif  
