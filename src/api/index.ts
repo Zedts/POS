@@ -325,4 +325,51 @@ export const validateDiscountCodeAPI = async (code: string, amount: number) => {
   }
 };
 
+// Orders API
+export const getOrdersAPI = async (filters?: { startDate?: string; endDate?: string; employeeName?: string; status?: string }) => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.startDate) params.append('startDate', filters.startDate);
+    if (filters?.endDate) params.append('endDate', filters.endDate);
+    if (filters?.employeeName) params.append('employeeName', filters.employeeName);
+    if (filters?.status) params.append('status', filters.status);
+    
+    const response = await api.get(`/orders?${params.toString()}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getOrderByNumberAPI = async (orderNumber: string) => {
+  try {
+    const response = await api.get(`/orders/${orderNumber}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getOrderStatsAPI = async () => {
+  try {
+    const response = await api.get("/orders/stats");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const updateOrderStatusAPI = async (orderNumber: string, status: string) => {
+  try {
+    const response = await api.put(`/orders/${orderNumber}/status`, { status });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 export default api;

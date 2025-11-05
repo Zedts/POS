@@ -43,7 +43,6 @@ Halaman untuk mengatur program diskon aktif:
 
 ---
 
-# SEKARANG KERJAKAN ORDER & SALES MANAGEMENT
 5. Order & Sales Management
 Halaman untuk memantau aktivitas transaksi siswa POS:
 - Daftar semua order yang telah dibuat siswa (terhubung ke tabel `orders`)  
@@ -53,6 +52,7 @@ Halaman untuk memantau aktivitas transaksi siswa POS:
 
 ---
 
+# SEKARANG KERJAKAN INVOICE MANAGEMENT
 6. Invoice Management
 Halaman monitoring semua invoice yang sudah dibuat:
 - Daftar invoice berdasarkan **invoice_status** (diproses, berhasil, gagal)  
