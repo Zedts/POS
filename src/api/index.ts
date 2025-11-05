@@ -594,4 +594,62 @@ export const getAuditLogsAPI = async (filters?: {
   }
 };
 
+// Settings API
+export const getAdminProfileAPI = async () => {
+  try {
+    const response = await api.get('/settings/profile');
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to fetch admin profile" };
+  }
+};
+
+export const updateAdminProfileAPI = async (profileData: {
+  username: string;
+  fullName: string;
+  currentPassword?: string;
+  newPassword?: string;
+}) => {
+  try {
+    const response = await api.put('/settings/profile', profileData);
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to update profile" };
+  }
+};
+
+export const downloadBackupAPI = async () => {
+  try {
+    const response = await api.get('/settings/backup', {
+      responseType: 'blob'
+    });
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to download backup" };
+  }
+};
+
+export const resetDatabaseAPI = async () => {
+  try {
+    const response = await api.post('/settings/reset');
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to reset database" };
+  }
+};
+
+export const restoreDatabaseAPI = async (sqlContent: string) => {
+  try {
+    const response = await api.post('/settings/restore', { sqlContent });
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to restore database" };
+  }
+};
+
 export default api;

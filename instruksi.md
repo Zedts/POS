@@ -94,11 +94,10 @@ Halaman untuk menampilkan riwayat harga dari tabel `product_price_history`:
 10. Settings (Pengaturan Sistem)
 Halaman untuk konfigurasi dasar sistem POS:
 - Atur theme gelap atau terang
-- Edit profil admin (username, password)  
-- Atur format tanggal & waktu  
+- Edit profil admin (username, password)
 - Fitur **Backup / Restore Database** (Backup database maka otomatis download file script.sql, dan untuk restore itu mengembalikan database yang defaultnya)  
 - Kelola **Return & Refund Policies**  (tampilan saja, fungsinya nanti)  
-- Manajemen metode pembayaran (cash, QR, e-money, dll)  
+- Manajemen metode pembayaran (cash, QR, e-money, dll -> tampilan saja, fungsinya nanti)  
 
 ---
 
