@@ -25,7 +25,6 @@ Halaman untuk menampilkan dan mengelola semua produk di POS:
 
 ---
 
-# SEKARANG KERJAKAN CATEGORY MANAGEMENT
 3. Category Management
 Halaman untuk manajemen kategori produk:
 - Tambah, edit, dan hapus kategori  (proses crud, menyesuaikan database ya! tanpa data dummy (script.sql))
@@ -44,12 +43,13 @@ Halaman untuk mengatur program diskon aktif:
 
 ---
 
+# SEKARANG KERJAKAN ORDER & SALES MANAGEMENT
 5. Order & Sales Management
 Halaman untuk memantau aktivitas transaksi siswa POS:
 - Daftar semua order yang telah dibuat siswa (terhubung ke tabel `orders`)  
 - Filter berdasarkan rentang tanggal, siswa, dan status order (**pending**, **complete**, **refunded**)  
 - Detail order menampilkan daftar item dari `order_details`  
-- Fitur **Export ke Excel / PDF** untuk laporan transaksi  
+- Fitur **Export ke Excel / PDF** untuk laporan transaksi, saya ingin fitur ini dibuat tiga opsi, jadi ketika tombol print (pasitkan sudah menggunakan logo export di tombolnya) ditekan, dia akan memunculkan pop up pilihan lagi untuk dibuat menjadi pdf, excel ataupun bon struk. Pastikan di dalam pop up dalam rangka menampilkan ketiga opsi dari pilihan tersebut, user bisa pilih salah satu atau bisa pilih lebih dari 1 lalu ketika sudah di pilih user nanti bisa klik tombol print (jika user sudah pilih maka dia baru bisa klik tombol print, jika belum pilih sama sekali buat tombol printnya menjadi disable) yang ada pada pop up, dan di samping kiri tombol print ada juga tombol cancel jika user tidak jadi melakukan aksi tersebut!
 
 ---
 

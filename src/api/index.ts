@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getToken } from "../utils/auth";
 
-const API_URL = "http://172.11.10.11:3000/api";
+const API_URL = "http://192.168.1.138:3000/api";
 
 // Create axios instance
 const api = axios.create({
@@ -245,6 +245,79 @@ export const getCategoryStatsAPI = async () => {
 export const getProductsByCategoryAPI = async (id: number) => {
   try {
     const response = await api.get(`/categories/${id}/products`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// Discounts API
+export const getDiscountsAPI = async () => {
+  try {
+    const response = await api.get("/discounts");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getDiscountByIdAPI = async (id: number) => {
+  try {
+    const response = await api.get(`/discounts/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const createDiscountAPI = async (discountData: any) => {
+  try {
+    const response = await api.post("/discounts", discountData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const updateDiscountAPI = async (id: number, discountData: any) => {
+  try {
+    const response = await api.put(`/discounts/${id}`, discountData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const deleteDiscountAPI = async (id: number) => {
+  try {
+    const response = await api.delete(`/discounts/${id}`);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const getDiscountStatsAPI = async () => {
+  try {
+    const response = await api.get("/discounts/stats");
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+export const validateDiscountCodeAPI = async (code: string, amount: number) => {
+  try {
+    const response = await api.post("/discounts/validate", { code, amount });
     return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

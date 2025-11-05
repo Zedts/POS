@@ -156,7 +156,7 @@ function Products() {
       if (product.picture_url) {
         const previewUrl = product.picture_url.startsWith('http') 
           ? product.picture_url 
-          : `http://172.11.10.11:3000${product.picture_url}`;
+          : `http://192.168.1.138:3000${product.picture_url}`;
         setImagePreview(previewUrl);
       }
       setSelectedFile(null);
@@ -475,7 +475,7 @@ function Products() {
                         <td className="px-4 py-3">
                           {product.picture_url ? (
                             <img
-                              src={product.picture_url.startsWith('http') ? product.picture_url : `http://172.11.10.11:3000${product.picture_url}`}
+                              src={product.picture_url.startsWith('http') ? product.picture_url : `http://192.168.1.138:3000${product.picture_url}`}
                               alt={product.product_name}
                               className="w-12 h-12 object-cover rounded"
                             />
