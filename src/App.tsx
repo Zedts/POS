@@ -1,6 +1,8 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import './components/ToastConfig.css';
+
+// Import Dashboard Page
 import Dashboard from './Dashboard';
 
 // Admin Import Pages
