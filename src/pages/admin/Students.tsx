@@ -435,31 +435,6 @@ function Students() {
               </div>
             </div>
 
-            {/* Today Revenue */}
-            <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
-              <div className="flex items-center justify-between">
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'rgba(1, 159, 99, 0.1)'
-                }}>
-                  <DollarSign size={24} style={{ color: 'var(--color-primary)' }} />
-                </div>
-                <div className="text-right">
-                  <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                    {formatCurrency(stats?.today_revenue || 0).replace('Rp', '').trim()}
-                  </p>
-                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>
-                    Pendapatan Hari Ini
-                  </p>
-                </div>
-              </div>
-            </div>
-
             {/* Month Transactions */}
             <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
               <div className="flex items-center justify-between">
@@ -480,6 +455,31 @@ function Students() {
                   </p>
                   <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>
                     Transaksi Bulan Ini
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Today Revenue */}
+            <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+              <div className="flex items-center justify-between">
+                <div style={{
+                  width: '48px',
+                  height: '48px',
+                  borderRadius: '12px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: 'rgba(1, 159, 99, 0.1)'
+                }}>
+                  <DollarSign size={24} style={{ color: 'var(--color-primary)' }} />
+                </div>
+                <div className="text-right">
+                  <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
+                    {formatCurrency(stats?.today_revenue || 0)}
+                  </p>
+                  <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>
+                    Pendapatan Hari Ini
                   </p>
                 </div>
               </div>

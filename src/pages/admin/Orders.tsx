@@ -543,10 +543,10 @@ function Orders() {
                     <DollarSign size={24} style={{ color: 'var(--color-primary)' }} />
                   </div>
                   <div className="text-right">
-                    <p className="text-xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--color-primary)' }}>
                       {formatCurrency(stats.total_revenue || 0)}
                     </p>
-                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                    <p style={{ color: 'var(--color-text-secondary)', fontSize: '14px' }}>
                       Total Pendapatan
                     </p>
                   </div>
