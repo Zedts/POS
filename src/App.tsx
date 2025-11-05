@@ -34,9 +34,11 @@ function App() {
         pauseOnHover
       />
       <Routes>
-        
-        {/* Admin Routes */}
+
+        {/* Dashboard Routes */}
         <Route path="/" element={<Dashboard />} />
+
+        {/* Admin Routes */}
         <Route path="/admin/home" element={<AdminHome />} />
         <Route path="/admin/products" element={<Products />} />
         <Route path="/admin/categories" element={<Categories />} />

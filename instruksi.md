@@ -90,17 +90,18 @@ Halaman untuk menampilkan riwayat harga dari tabel `product_price_history`:
 
 ---
 
+# SEKARANG KERJAKAN SETTINGS
 10. Settings (Pengaturan Sistem)
 Halaman untuk konfigurasi dasar sistem POS:
+- Atur theme gelap atau terang
 - Edit profil admin (username, password)  
 - Atur format tanggal & waktu  
-- Fitur **Backup / Restore Database** (tampilan saja, fungsinya nanti)  
+- Fitur **Backup / Restore Database** (Backup database maka otomatis download file script.sql, dan untuk restore itu mengembalikan database yang defaultnya)  
 - Kelola **Return & Refund Policies**  (tampilan saja, fungsinya nanti)  
 - Manajemen metode pembayaran (cash, QR, e-money, dll)  
 
 ---
 
-# SEKARANG KERJAKAN AUDIT LOGS
 11. Audit Logs (intinya berisi logs logs yang dilakukan oleh admin, berkaitan dengan CRUD pastinya tiap ada proses pasti dimasukan ke dalam logs ini)
 Fitur keamanan tambahan untuk pencatatan aktivitas sistem:
 - Menyimpan semua aktivitas penting (produk ditambah, dihapus, harga diubah, diskon dibuat, dll.)  
