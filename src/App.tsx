@@ -34,6 +34,7 @@ function App() {
         pauseOnHover
       />
       <Routes>
+        
         {/* Admin Routes */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/admin/home" element={<AdminHome />} />
