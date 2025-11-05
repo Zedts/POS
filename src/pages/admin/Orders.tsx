@@ -403,134 +403,152 @@ function Orders() {
           {/* Statistics Cards */}
           {stats && (
             <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-7 gap-4 mb-8">
-              <div
-                className="p-6 rounded-lg border"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-              >
+              {/* Total Orders */}
+              <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
-                      Total Order
-                    </p>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(1, 159, 99, 0.1)'
+                  }}>
+                    <ShoppingCart size={24} style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
                       {stats.total_orders || 0}
                     </p>
-                  </div>
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(1, 159, 99, 0.1)' }}
-                  >
-                    <ShoppingCart size={24} style={{ color: 'var(--color-success)' }} />
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      Total Order
+                    </p>
                   </div>
                 </div>
               </div>
 
-              <div
-                className="p-6 rounded-lg border"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-              >
+              {/* Pending Orders */}
+              <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
-                      Pending
-                    </p>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                      {stats.pending_orders || 0}
-                    </p>
-                  </div>
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(251, 191, 36, 0.1)' }}
-                  >
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(245, 158, 11, 0.1)'
+                  }}>
                     <Clock size={24} style={{ color: 'var(--color-warning)' }} />
                   </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                      {stats.pending_orders || 0}
+                    </p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      Pending
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div
-                className="p-6 rounded-lg border"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-              >
+              {/* Complete Orders */}
+              <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
-                      Complete
-                    </p>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                      {stats.complete_orders || 0}
-                    </p>
-                  </div>
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}
-                  >
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)'
+                  }}>
                     <CheckCircle2 size={24} style={{ color: 'var(--color-success)' }} />
                   </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                      {stats.complete_orders || 0}
+                    </p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      Complete
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div
-                className="p-6 rounded-lg border"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-              >
+              {/* Refunded Orders */}
+              <div className="p-6 rounded-lg border" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
-                      Refunded
-                    </p>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                      {stats.refunded_orders || 0}
-                    </p>
-                  </div>
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}
-                  >
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(239, 68, 68, 0.1)'
+                  }}>
                     <XCircle size={24} style={{ color: 'var(--color-danger)' }} />
                   </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                      {stats.refunded_orders || 0}
+                    </p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      Refunded
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div
-                className="p-6 rounded-lg border col-span-1 md:col-span-2 lg:col-span-1"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-              >
+              {/* Today Orders */}
+              <div className="p-6 rounded-lg border col-span-1 md:col-span-2 lg:col-span-1" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
-                      Hari Ini
-                    </p>
-                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
-                      {stats.today_orders || 0}
-                    </p>
-                  </div>
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(59, 130, 246, 0.1)' }}
-                  >
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)'
+                  }}>
                     <TrendingUp size={24} style={{ color: 'var(--color-info)' }} />
                   </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
+                      {stats.today_orders || 0}
+                    </p>
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      Hari Ini
+                    </p>
+                  </div>
                 </div>
               </div>
 
-              <div
-                className="p-6 rounded-lg border col-span-1 md:col-span-2"
-                style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
-              >
+              {/* Total Revenue */}
+              <div className="p-6 rounded-lg border col-span-1 md:col-span-2" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
-                      Total Pendapatan
-                    </p>
-                    <p className="text-xl font-bold" style={{ color: 'var(--color-text-primary)' }}>
+                  <div style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '12px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(1, 159, 99, 0.1)'
+                  }}>
+                    <DollarSign size={24} style={{ color: 'var(--color-primary)' }} />
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xl font-bold mb-1" style={{ color: 'var(--color-text-primary)' }}>
                       {formatCurrency(stats.total_revenue || 0)}
                     </p>
-                  </div>
-                  <div
-                    className="p-3 rounded-lg"
-                    style={{ backgroundColor: 'rgba(1, 159, 99, 0.1)' }}
-                  >
-                    <DollarSign size={24} style={{ color: 'var(--color-success)' }} />
+                    <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                      Total Pendapatan
+                    </p>
                   </div>
                 </div>
               </div>

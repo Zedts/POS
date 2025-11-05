@@ -61,7 +61,6 @@ Halaman monitoring semua invoice yang sudah dibuat:
 
 ---
 
-# SEKARANG KERJAKAN STUDENT MANAGEMENT
 7. Student Management
 Halaman untuk manajemen data siswa sebagai operator POS:
 - Daftar seluruh siswa aktif  
@@ -72,6 +71,7 @@ Halaman untuk manajemen data siswa sebagai operator POS:
 
 ---
 
+# SEKARANG KERJAKAN REPORT CENTER
 8. Report Center (Laporan & Statistik)
 Pusat laporan keuangan dan aktivitas POS:
 - Laporan Penjualan Harian / Mingguan / Bulanan  
