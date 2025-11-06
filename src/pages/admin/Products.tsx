@@ -34,8 +34,8 @@ interface Product {
   category_name: string;
   qty: number;
   supplier: string;
-  price: number;
-  picture_url: string | null;
+  unit_price: number;
+  image_url: string | null;
   status: 'kadaluarsa' | 'tidak';
   exp_date: string | null;
   created_date: string;
@@ -137,16 +137,16 @@ function Products() {
         category_id: product.category_id.toString(),
         qty: product.qty.toString(),
         supplier: product.supplier || '',
-        price: product.price.toString(),
-        picture_url: product.picture_url || '',
+        price: product.unit_price.toString(),
+        picture_url: product.image_url || '',
         status: product.status,
         exp_date: product.exp_date ? new Date(product.exp_date).toISOString().split('T')[0] : ''
       });
       // Set preview untuk edit mode
-      if (product.picture_url) {
-        const previewUrl = product.picture_url.startsWith('http') 
-          ? product.picture_url 
-          : `http://172.11.7.76:3000${product.picture_url}`;
+      if (product.image_url) {
+        const previewUrl = product.image_url.startsWith('http')
+          ? product.image_url
+          : `http://172.11.7.76:3000${product.image_url}`;
         setImagePreview(previewUrl);
       }
       setSelectedFile(null);
@@ -453,9 +453,9 @@ function Products() {
                     filteredProducts.map((product) => (
                       <tr key={product.id} className="border-t" style={{ borderColor: 'var(--color-border)' }}>
                         <td className="px-4 py-3">
-                          {product.picture_url ? (
+                          {product.image_url ? (
                             <img
-                              src={product.picture_url.startsWith('http') ? product.picture_url : `http://172.11.7.76:3000${product.picture_url}`}
+                              src={product.image_url.startsWith('http') ? product.image_url : `http://172.11.7.76:3000${product.image_url}`}
                               alt={product.product_name}
                               className="w-12 h-12 object-cover rounded"
                             />
@@ -476,7 +476,7 @@ function Products() {
                           </span>
                         </td>
                         <td className="px-4 py-3" style={{ color: 'var(--color-text-primary)' }}>
-                          Rp {product.price.toLocaleString()}
+                          Rp {product.unit_price.toLocaleString()}
                         </td>
                         <td className="px-4 py-3">
                           <span
