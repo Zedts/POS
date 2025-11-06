@@ -4,7 +4,7 @@
 Halaman ini merupakan inti dari sistem POS, di mana siswa melakukan transaksi penjualan harian. Desain dan alur kerjanya mirip dengan interface kasir pada toko ritel modern seperti Indomart atau Alfamart.
 
 ---
-# KERJAKAN FITUR UTAMA DAHULU!
+
 ## Fitur Utama
 
 ### A. Panel Produk (Sebelah Kiri)
@@ -103,6 +103,7 @@ Menampilkan data dalam bentuk tabel dengan kolom:
 
 ---
 
+# SEKARANG KERJAKAN FITUR STUDENT PROFILE
 # Student Profile - Halaman Profil Siswa
 Halaman ini digunakan oleh siswa untuk melihat dan mengedit data pribadi mereka sendiri. Fungsinya memastikan bahwa setiap siswa dapat mengelola informasi pribadinya tanpa mengakses data siswa lain.
 

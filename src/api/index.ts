@@ -694,4 +694,32 @@ export const restoreDatabaseAPI = async (sqlContent: string) => {
   }
 };
 
+// Student Profile API
+export const updateStudentProfileAPI = async (id: number, profileData: {
+  full_name: string;
+  phone: string;
+  address: string;
+}) => {
+  try {
+    const response = await api.put(`/students/${id}`, profileData);
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to update profile" };
+  }
+};
+
+export const updateStudentPasswordAPI = async (id: number, oldPassword: string, newPassword: string) => {
+  try {
+    const response = await api.put(`/students/${id}/password`, {
+      oldPassword,
+      newPassword
+    });
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to update password" };
+  }
+};
+
 export default api;

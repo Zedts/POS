@@ -5,7 +5,9 @@ import {
   getCategoriesListAPI, 
   validateDiscountCodeAPI,
   createOrderAPI,
-  createInvoiceAPI
+  createInvoiceAPI,
+  updateStudentProfileAPI,
+  updateStudentPasswordAPI
 } from '../../api';
 import { 
   ShoppingCart, 
@@ -21,6 +23,7 @@ import {
   Tag
 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import crypto from 'crypto-js';
 
 interface Product {
   id: number;
@@ -29,7 +32,6 @@ interface Product {
   qty: number;
   image_url: string;
   category_id: number;
-  barcode: string;
 }
 
 interface Category {
@@ -88,14 +90,32 @@ function EmployeeHome() {
   const [editNewPassword, setEditNewPassword] = useState('');
   const [editConfirmPassword, setEditConfirmPassword] = useState('');
 
+  // Product detail modal state
+  const [productDetailModalOpen, setProductDetailModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [detailModalQty, setDetailModalQty] = useState(1);
+
+  // Clear cart confirmation modal state
+  const [showClearCartModal, setShowClearCartModal] = useState(false);
+
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const fetchProducts = async () => {
     try {
       setLoading(true);
       const response = await getProductsAPI(selectedCategory || undefined);
-      setProducts(response.data || []);
-    } catch {
+      const productsData = response.data || [];
+      
+      // Filter out products with invalid data
+      const validProducts = productsData.filter((p: Product) => 
+        p.product_name && 
+        p.unit_price !== undefined && 
+        p.unit_price !== null
+      );
+      
+      setProducts(validProducts);
+    } catch (error) {
+      console.error('Error fetching products:', error);
       toast.error('Gagal memuat produk');
     } finally {
       setLoading(false);
@@ -122,9 +142,17 @@ function EmployeeHome() {
     setUserData(user);
     
     // Load cart from localStorage
-    const savedCart = localStorage.getItem('pos_cart');
-    if (savedCart) {
-      setCart(JSON.parse(savedCart));
+    try {
+      const savedCart = localStorage.getItem('pos_cart');
+      if (savedCart && savedCart !== '[]') {
+        const parsedCart = JSON.parse(savedCart);
+        if (Array.isArray(parsedCart) && parsedCart.length > 0) {
+          setCart(parsedCart);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      localStorage.removeItem('pos_cart');
     }
 
     fetchProducts();
@@ -145,8 +173,13 @@ function EmployeeHome() {
   }, []);
 
   useEffect(() => {
-    // Save cart to localStorage whenever it changes
-    localStorage.setItem('pos_cart', JSON.stringify(cart));
+    // Save cart to localStorage whenever it changes (but not on initial empty state)
+    if (cart.length > 0) {
+      localStorage.setItem('pos_cart', JSON.stringify(cart));
+    } else {
+      // If cart is empty, remove from localStorage
+      localStorage.removeItem('pos_cart');
+    }
   }, [cart]);
 
   useEffect(() => {
@@ -174,13 +207,151 @@ function EmployeeHome() {
     setProfileMenuOpen(false);
   };
 
-  const handleSaveProfile = () => {
-    // TODO: Implement profile update API
-    toast.info('Fitur update profile akan segera tersedia');
-    setEditProfileModalOpen(false);
+  const handleSaveProfile = async () => {
+    try {
+      // Validation
+      if (!editFullName.trim()) {
+        toast.error('Nama lengkap tidak boleh kosong');
+        return;
+      }
+
+      if (!editPhone.trim()) {
+        toast.error('Nomor HP tidak boleh kosong');
+        return;
+      }
+
+      if (!editAddress.trim()) {
+        toast.error('Alamat tidak boleh kosong');
+        return;
+      }
+
+      // Validate password if user wants to change it
+      if (editCurrentPassword || editNewPassword || editConfirmPassword) {
+        if (!editCurrentPassword) {
+          toast.error('Masukkan password saat ini untuk mengubah password');
+          return;
+        }
+
+        if (!editNewPassword) {
+          toast.error('Masukkan password baru');
+          return;
+        }
+
+        if (editNewPassword.length < 6) {
+          toast.error('Password baru minimal 6 karakter');
+          return;
+        }
+
+        if (editNewPassword !== editConfirmPassword) {
+          toast.error('Konfirmasi password tidak sesuai');
+          return;
+        }
+
+        // Hash passwords with MD5
+        const oldPasswordHash = crypto.MD5(editCurrentPassword).toString();
+        const newPasswordHash = crypto.MD5(editNewPassword).toString();
+
+        // Update password first
+        await updateStudentPasswordAPI(userData.id, oldPasswordHash, newPasswordHash);
+        toast.success('Password berhasil diubah');
+      }
+
+      // Update profile
+      const profileData = {
+        full_name: editFullName,
+        phone: editPhone,
+        address: editAddress
+      };
+
+      await updateStudentProfileAPI(userData.id, profileData);
+
+      // Update localStorage userData
+      const updatedUserData = {
+        ...userData,
+        full_name: editFullName,
+        phone: editPhone,
+        address: editAddress
+      };
+      localStorage.setItem('userData', JSON.stringify(updatedUserData));
+      setUserData(updatedUserData);
+
+      toast.success('Profil berhasil diperbarui');
+      setEditProfileModalOpen(false);
+
+      // Reset password fields
+      setEditCurrentPassword('');
+      setEditNewPassword('');
+      setEditConfirmPassword('');
+
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Gagal memperbarui profil';
+      toast.error(errorMessage);
+    }
+  };
+
+  const openProductDetail = (product: Product) => {
+    setSelectedProduct(product);
+    setDetailModalQty(1);
+    setProductDetailModalOpen(true);
+  };
+
+  const closeProductDetail = () => {
+    setProductDetailModalOpen(false);
+    setSelectedProduct(null);
+    setDetailModalQty(1);
+  };
+
+  const addToCartFromDetail = () => {
+    if (!selectedProduct) return;
+
+    // Validate product data
+    if (!selectedProduct.unit_price || selectedProduct.unit_price <= 0) {
+      toast.error('Produk tidak valid atau harga tidak tersedia');
+      return;
+    }
+
+    if (selectedProduct.qty <= 0) {
+      toast.error('Stok produk habis');
+      return;
+    }
+
+    if (detailModalQty > selectedProduct.qty) {
+      toast.error('Jumlah melebihi stok tersedia');
+      return;
+    }
+
+    const existingItem = cart.find(item => item.productId === selectedProduct.id);
+    
+    if (existingItem) {
+      const newQty = existingItem.qty + detailModalQty;
+      if (newQty > selectedProduct.qty) {
+        toast.error('Jumlah melebihi stok tersedia');
+        return;
+      }
+      updateCartQty(selectedProduct.id, newQty);
+    } else {
+      const newItem: CartItem = {
+        productId: selectedProduct.id,
+        productName: selectedProduct.product_name || 'Produk',
+        productPicture: selectedProduct.image_url || '',
+        price: selectedProduct.unit_price,
+        qty: detailModalQty,
+        stock: selectedProduct.qty
+      };
+      setCart([...cart, newItem]);
+    }
+
+    toast.success(`${selectedProduct.product_name} (${detailModalQty}) ditambahkan ke keranjang`);
+    closeProductDetail();
   };
 
   const addToCart = (product: Product) => {
+    // Validate product data
+    if (!product || !product.unit_price || product.unit_price <= 0) {
+      toast.error('Produk tidak valid atau harga tidak tersedia');
+      return;
+    }
+
     if (product.qty <= 0) {
       toast.error('Stok produk habis');
       return;
@@ -197,8 +368,8 @@ function EmployeeHome() {
     } else {
       const newItem: CartItem = {
         productId: product.id,
-        productName: product.product_name,
-        productPicture: product.image_url,
+        productName: product.product_name || 'Produk',
+        productPicture: product.image_url || '',
         price: product.unit_price,
         qty: 1,
         stock: product.qty
@@ -235,13 +406,20 @@ function EmployeeHome() {
   const clearCart = () => {
     if (cart.length === 0) return;
     
-    if (window.confirm('Yakin ingin membatalkan belanja dan mengosongkan keranjang?')) {
-      setCart([]);
-      setAppliedDiscount(null);
-      setDiscountCode('');
-      setCashReceived('');
-      toast.info('Keranjang dikosongkan');
-    }
+    setShowClearCartModal(true);
+  };
+
+  const handleConfirmClearCart = () => {
+    setCart([]);
+    setAppliedDiscount(null);
+    setDiscountCode('');
+    setCashReceived('');
+    setShowClearCartModal(false);
+    toast.info('Keranjang dikosongkan');
+  };
+
+  const handleCloseClearCartModal = () => {
+    setShowClearCartModal(false);
   };
 
   const applyDiscount = async () => {
@@ -285,7 +463,7 @@ function EmployeeHome() {
   };
 
   const calculateSubtotal = () => {
-    return cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    return cart.reduce((sum, item) => sum + ((item.price || 0) * (item.qty || 0)), 0);
   };
 
   const calculateDiscount = () => {
@@ -331,19 +509,21 @@ function EmployeeHome() {
 
       // Create order
       const orderData = {
-        employeeId: userData.id,
-        orderTotal: calculateSubtotal(),
-        balance: calculateTotal(),
-        discountCode: appliedDiscount?.code
+        employeeId: Number(userData.id),
+        orderTotal: Number(calculateSubtotal().toFixed(2)),
+        balance: Number(calculateTotal().toFixed(2)),
+        ...(appliedDiscount?.code && { discountCode: appliedDiscount.code })
       };
 
       const orderItems = cart.map(item => ({
-        productId: item.productId,
-        productName: item.productName,
-        productPicture: item.productPicture,
-        qty: item.qty,
-        price: item.price
+        productId: Number(item.productId),
+        productName: item.productName || 'Produk',
+        productPicture: item.productPicture || '',
+        qty: Number(item.qty),
+        price: Number(item.price.toFixed(2))
       }));
+
+      console.log('Sending order data:', { orderData, orderItems }); // Debug log
 
       const orderResponse = await createOrderAPI(orderData, orderItems);
       
@@ -354,14 +534,16 @@ function EmployeeHome() {
       // Create invoice
       const invoiceData = {
         orderNumber: orderResponse.data.orderNumber,
-        orderTotal: calculateSubtotal(),
+        orderTotal: Number(calculateSubtotal().toFixed(2)),
         discountCode: appliedDiscount?.code,
         discountPercent: appliedDiscount?.discountPercent || 0,
-        balance: calculateTotal(),
-        paidBy: paymentMethod === 'cash' ? 'Tunai' : 'QRIS',
-        verifiedBy: userData.id,
-        mobileEmployee: userData.phone
+        balance: Number(calculateTotal().toFixed(2)),
+        paidBy: paymentMethod === 'cash' ? 'cash' : 'qr',
+        verifiedBy: Number(userData.id),
+        mobileEmployee: userData.phone || ''
       };
+
+      console.log('Sending invoice data:', invoiceData); // Debug log
 
       const invoiceResponse = await createInvoiceAPI(invoiceData);
       
@@ -374,13 +556,12 @@ function EmployeeHome() {
       // Open receipt in new tab
       printReceipt(invoiceResponse.data.invoiceNumber, orderResponse.data.orderNumber);
       
-      // Clear cart and reset form
+      // Clear cart and reset form (localStorage will be cleared automatically by useEffect)
       setCart([]);
       setAppliedDiscount(null);
       setDiscountCode('');
       setCashReceived('');
       setPaymentMethod('cash');
-      localStorage.removeItem('pos_cart');
       
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Gagal memproses transaksi';
@@ -578,9 +759,18 @@ function EmployeeHome() {
     `;
   };
 
-  const filteredProducts = products.filter(product => 
-    product.product_name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredProducts = products.filter(product => {
+    // Filter by search query
+    const matchesSearch = product.product_name?.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    // Filter by category
+    const matchesCategory = selectedCategory ? product.category_id === selectedCategory : true;
+    
+    // Ensure product has valid data
+    const hasValidData = product.unit_price !== undefined && product.unit_price !== null;
+    
+    return matchesSearch && matchesCategory && hasValidData;
+  });
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: 'var(--color-background)' }}>
@@ -758,13 +948,16 @@ function EmployeeHome() {
                   {filteredProducts.map(product => (
                     <div
                       key={product.id}
-                      className="rounded-lg overflow-hidden shadow-sm transition-all hover:shadow-lg cursor-pointer"
+                      className="rounded-lg overflow-hidden shadow-sm transition-all hover:shadow-lg"
                       style={{ 
                         backgroundColor: 'var(--color-background)',
                         border: '1px solid var(--color-border)'
                       }}
                     >
-                      <div className="aspect-square bg-gray-200 relative">
+                      <div 
+                        className="aspect-square bg-gray-200 relative cursor-pointer"
+                        onClick={() => openProductDetail(product)}
+                      >
                         <img
                           src={product.image_url || 'https://via.placeholder.com/300'}
                           alt={product.product_name}
@@ -778,8 +971,9 @@ function EmployeeHome() {
                       </div>
                       <div className="p-3">
                         <h3 
-                          className="font-semibold text-sm mb-1 line-clamp-2"
+                          className="font-semibold text-sm mb-1 line-clamp-2 cursor-pointer"
                           style={{ color: 'var(--color-text-primary)' }}
+                          onClick={() => openProductDetail(product)}
                         >
                           {product.product_name}
                         </h3>
@@ -787,16 +981,19 @@ function EmployeeHome() {
                           className="font-bold mb-2"
                           style={{ color: 'var(--color-primary)' }}
                         >
-                          Rp {product.unit_price.toLocaleString('id-ID')}
+                          Rp {(product.unit_price || 0).toLocaleString('id-ID')}
                         </p>
                         <p 
                           className="text-xs mb-2"
                           style={{ color: 'var(--color-text-secondary)' }}
                         >
-                          Stok: {product.qty}
+                          Stok: {product.qty || 0}
                         </p>
                         <button
-                          onClick={() => addToCart(product)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            addToCart(product);
+                          }}
                           disabled={product.qty <= 0}
                           className="w-full py-2 rounded-lg font-semibold text-sm transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                           style={{
@@ -878,7 +1075,7 @@ function EmployeeHome() {
                             className="text-sm"
                             style={{ color: 'var(--color-text-secondary)' }}
                           >
-                            Rp {item.price.toLocaleString('id-ID')}
+                            Rp {(item.price || 0).toLocaleString('id-ID')}
                           </p>
                         </div>
                         <button
@@ -916,7 +1113,7 @@ function EmployeeHome() {
                           className="font-bold"
                           style={{ color: 'var(--color-primary)' }}
                         >
-                          Rp {(item.price * item.qty).toLocaleString('id-ID')}
+                          Rp {((item.price || 0) * (item.qty || 0)).toLocaleString('id-ID')}
                         </p>
                       </div>
                     </div>
@@ -1148,16 +1345,16 @@ function EmployeeHome() {
                   className="block text-sm font-semibold mb-1"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Username
+                  NISN <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>(Read-only)</span>
                 </label>
                 <input
                   type="text"
-                  value={editUsername}
-                  onChange={(e) => setEditUsername(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border outline-none"
+                  value={userData?.nisn || '-'}
+                  disabled
+                  className="w-full px-4 py-2 rounded-lg border outline-none cursor-not-allowed opacity-60"
                   style={{ 
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text-primary)',
+                    backgroundColor: 'var(--color-surface-dark)',
+                    color: 'var(--color-text-secondary)',
                     borderColor: 'var(--color-border)'
                   }}
                 />
@@ -1168,7 +1365,27 @@ function EmployeeHome() {
                   className="block text-sm font-semibold mb-1"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Nama Lengkap
+                  Username <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>(Read-only)</span>
+                </label>
+                <input
+                  type="text"
+                  value={editUsername}
+                  disabled
+                  className="w-full px-4 py-2 rounded-lg border outline-none cursor-not-allowed opacity-60"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface-dark)',
+                    color: 'var(--color-text-secondary)',
+                    borderColor: 'var(--color-border)'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label 
+                  className="block text-sm font-semibold mb-1"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  Nama Lengkap <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1188,7 +1405,47 @@ function EmployeeHome() {
                   className="block text-sm font-semibold mb-1"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  No. Telepon
+                  Kelas <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>(Read-only)</span>
+                </label>
+                <input
+                  type="text"
+                  value={editClass}
+                  disabled
+                  className="w-full px-4 py-2 rounded-lg border outline-none cursor-not-allowed opacity-60"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface-dark)',
+                    color: 'var(--color-text-secondary)',
+                    borderColor: 'var(--color-border)'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label 
+                  className="block text-sm font-semibold mb-1"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  Jurusan <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>(Read-only)</span>
+                </label>
+                <input
+                  type="text"
+                  value={editMajor}
+                  disabled
+                  className="w-full px-4 py-2 rounded-lg border outline-none cursor-not-allowed opacity-60"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface-dark)',
+                    color: 'var(--color-text-secondary)',
+                    borderColor: 'var(--color-border)'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label 
+                  className="block text-sm font-semibold mb-1"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  No. Telepon <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                 </label>
                 <input
                   type="text"
@@ -1208,53 +1465,13 @@ function EmployeeHome() {
                   className="block text-sm font-semibold mb-1"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Alamat
+                  Alamat <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                 </label>
                 <textarea
                   value={editAddress}
                   onChange={(e) => setEditAddress(e.target.value)}
                   rows={3}
                   className="w-full px-4 py-2 rounded-lg border outline-none resize-none"
-                  style={{ 
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text-primary)',
-                    borderColor: 'var(--color-border)'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label 
-                  className="block text-sm font-semibold mb-1"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  Kelas
-                </label>
-                <input
-                  type="text"
-                  value={editClass}
-                  onChange={(e) => setEditClass(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border outline-none"
-                  style={{ 
-                    backgroundColor: 'var(--color-background)',
-                    color: 'var(--color-text-primary)',
-                    borderColor: 'var(--color-border)'
-                  }}
-                />
-              </div>
-
-              <div>
-                <label 
-                  className="block text-sm font-semibold mb-1"
-                  style={{ color: 'var(--color-text-primary)' }}
-                >
-                  Jurusan
-                </label>
-                <input
-                  type="text"
-                  value={editMajor}
-                  onChange={(e) => setEditMajor(e.target.value)}
-                  className="w-full px-4 py-2 rounded-lg border outline-none"
                   style={{ 
                     backgroundColor: 'var(--color-background)',
                     color: 'var(--color-text-primary)',
@@ -1368,6 +1585,253 @@ function EmployeeHome() {
               >
                 Fitur settings akan segera tersedia
               </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Product Detail Modal */}
+      {productDetailModalOpen && selectedProduct && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4"
+          style={{ zIndex: 9999 }}
+          onClick={closeProductDetail}
+        >
+          <div
+            className="rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+            style={{ backgroundColor: 'var(--color-surface)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h2 
+                className="text-xl font-bold"
+                style={{ color: 'var(--color-text-primary)' }}
+              >
+                Detail Produk
+              </h2>
+              <button
+                onClick={closeProductDetail}
+                className="p-1"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Product Image */}
+              <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden relative">
+                <img
+                  src={selectedProduct.image_url || 'https://via.placeholder.com/400'}
+                  alt={selectedProduct.product_name}
+                  className="w-full h-full object-cover"
+                />
+                {selectedProduct.qty <= 0 && (
+                  <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                    <span className="text-white font-bold text-2xl">HABIS</span>
+                  </div>
+                )}
+              </div>
+
+              {/* Product Info */}
+              <div className="flex flex-col">
+                <h3 
+                  className="text-2xl font-bold mb-2"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  {selectedProduct.product_name}
+                </h3>
+
+                <p 
+                  className="text-3xl font-bold mb-4"
+                  style={{ color: 'var(--color-primary)' }}
+                >
+                  Rp {(selectedProduct.unit_price || 0).toLocaleString('id-ID')}
+                </p>
+
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center">
+                    <span style={{ color: 'var(--color-text-secondary)' }}>Stok Tersedia:</span>
+                    <span 
+                      className="font-semibold"
+                      style={{ color: selectedProduct.qty > 10 ? '#10b981' : selectedProduct.qty > 0 ? '#f59e0b' : '#ef4444' }}
+                    >
+                      {selectedProduct.qty || 0} unit
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span style={{ color: 'var(--color-text-secondary)' }}>Kategori:</span>
+                    <span 
+                      className="font-semibold"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      {categories.find(c => c.id === selectedProduct.category_id)?.category_name || '-'}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Quantity Selector */}
+                {selectedProduct.qty > 0 && (
+                  <div className="mb-6">
+                    <label 
+                      className="block mb-2 font-semibold"
+                      style={{ color: 'var(--color-text-primary)' }}
+                    >
+                      Jumlah
+                    </label>
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setDetailModalQty(Math.max(1, detailModalQty - 1))}
+                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-all"
+                        style={{ 
+                          backgroundColor: 'var(--color-surface-dark)',
+                          color: 'var(--color-text-primary)'
+                        }}
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        max={selectedProduct.qty}
+                        value={detailModalQty}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value) || 1;
+                          setDetailModalQty(Math.max(1, Math.min(val, selectedProduct.qty)));
+                        }}
+                        className="w-20 text-center px-4 py-2 rounded-lg border outline-none font-semibold"
+                        style={{ 
+                          backgroundColor: 'var(--color-background)',
+                          color: 'var(--color-text-primary)',
+                          borderColor: 'var(--color-border)'
+                        }}
+                      />
+                      <button
+                        onClick={() => setDetailModalQty(Math.min(selectedProduct.qty, detailModalQty + 1))}
+                        className="w-10 h-10 rounded-lg flex items-center justify-center font-bold transition-all"
+                        style={{ 
+                          backgroundColor: 'var(--color-surface-dark)',
+                          color: 'var(--color-text-primary)'
+                        }}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Subtotal */}
+                {selectedProduct.qty > 0 && (
+                  <div 
+                    className="p-4 rounded-lg mb-6"
+                    style={{ backgroundColor: 'var(--color-surface-dark)' }}
+                  >
+                    <div className="flex justify-between items-center">
+                      <span style={{ color: 'var(--color-text-secondary)' }}>Subtotal</span>
+                      <span 
+                        className="text-2xl font-bold"
+                        style={{ color: 'var(--color-primary)' }}
+                      >
+                        Rp {((selectedProduct.unit_price || 0) * detailModalQty).toLocaleString('id-ID')}
+                      </span>
+                    </div>
+                  </div>
+                )}
+
+                {/* Add to Cart Button */}
+                <div className="flex gap-2 mt-auto">
+                  <button
+                    onClick={closeProductDetail}
+                    className="flex-1 py-3 rounded-lg font-semibold"
+                    style={{ backgroundColor: 'var(--color-surface-dark)', color: 'var(--color-text-primary)' }}
+                  >
+                    Tutup
+                  </button>
+                  <button
+                    onClick={addToCartFromDetail}
+                    disabled={selectedProduct.qty <= 0}
+                    className="flex-1 py-3 rounded-lg font-semibold transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    style={{
+                      backgroundColor: selectedProduct.qty <= 0 ? '#ccc' : 'var(--color-primary)',
+                      color: '#fff'
+                    }}
+                  >
+                    {selectedProduct.qty <= 0 ? 'Stok Habis' : '+ KERANJANG'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Clear Cart Confirmation Modal */}
+      {showClearCartModal && (
+        <div
+          className="fixed inset-0 flex items-center justify-center p-4"
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999 }}
+          onClick={handleCloseClearCartModal}
+        >
+          <div
+            className="rounded-lg shadow-xl max-w-md w-full"
+            style={{ backgroundColor: 'var(--color-surface)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: 'var(--color-border)' }}>
+              <h3 className="text-xl font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                Konfirmasi Kosongkan Keranjang
+              </h3>
+              <button
+                onClick={handleCloseClearCartModal}
+                className="p-1 rounded hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--color-text-secondary)' }}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="p-6">
+              <div className="flex items-start gap-4 mb-6">
+                <div className="flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(239, 68, 68, 0.1)' }}>
+                  <Trash2 size={24} style={{ color: '#ef4444' }} />
+                </div>
+                <div className="flex-1">
+                  <p className="text-base mb-2" style={{ color: 'var(--color-text-primary)' }}>
+                    Apakah Anda yakin ingin membatalkan belanja dan mengosongkan keranjang?
+                  </p>
+                  <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
+                    Semua item dalam keranjang ({cart.length} item) akan dihapus dan tidak dapat dikembalikan.
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={handleCloseClearCartModal}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-80"
+                  style={{ 
+                    backgroundColor: 'var(--color-surface)', 
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text-primary)' 
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  onClick={handleConfirmClearCart}
+                  className="px-4 py-2 rounded border font-medium transition-all hover:opacity-90"
+                  style={{ 
+                    backgroundColor: '#ef4444',
+                    borderColor: '#ef4444',
+                    color: '#fff'
+                  }}
+                >
+                  Kosongkan Keranjang
+                </button>
+              </div>
             </div>
           </div>
         </div>
