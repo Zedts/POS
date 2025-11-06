@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getToken } from "../utils/auth";
 
-const API_URL = "http://192.168.1.138:3000/api";
+const API_URL = "http://172.11.7.76:3000/api";
 
 // Create axios instance
 const api = axios.create({
@@ -372,6 +372,28 @@ export const updateOrderStatusAPI = async (orderNumber: string, status: string) 
   }
 };
 
+// Create new order
+export const createOrderAPI = async (orderData: {
+  employeeId: number;
+  orderTotal: number;
+  balance: number;
+  discountCode?: string;
+}, orderItems: Array<{
+  productId: number;
+  productName: string;
+  productPicture: string;
+  qty: number;
+  price: number;
+}>) => {
+  try {
+    const response = await api.post('/orders', { orderData, orderItems });
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
 // Invoices API
 export const getInvoicesAPI = async (filters?: { startDate?: string; endDate?: string; invoiceNumber?: string; status?: string; paidBy?: string }) => {
   try {
@@ -403,6 +425,26 @@ export const getInvoiceByNumberAPI = async (invoiceNumber: string) => {
 export const getInvoiceStatsAPI = async () => {
   try {
     const response = await api.get('/invoices/stats');
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// Create new invoice
+export const createInvoiceAPI = async (invoiceData: {
+  orderNumber: string;
+  orderTotal: number;
+  discountCode?: string;
+  discountPercent?: number;
+  balance: number;
+  paidBy: string;
+  verifiedBy: number;
+  mobileEmployee?: string;
+}) => {
+  try {
+    const response = await api.post('/invoices', invoiceData);
     return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

@@ -155,7 +155,7 @@ function PriceHistoryModal({ productId, onClose }: PriceHistoryModalProps) {
           <div className="flex items-center gap-4">
             {product && product.picture_url && (
               <img
-                src={product.picture_url.startsWith('http') ? product.picture_url : `http://192.168.1.138:3000${product.picture_url}`}
+                src={product.picture_url.startsWith('http') ? product.picture_url : `http://172.11.7.76:3000${product.picture_url}`}
                 alt={product.product_name}
                 className="w-16 h-16 rounded-lg object-cover"
               />

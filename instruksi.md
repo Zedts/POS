@@ -1,111 +1,160 @@
 ### Ini adalah fitur dari masing masing halaman, coba kamu kembangkan dari masing masing halaman dan pastikan kamu menggunakan desain dan struktur secara konsisten, kerjakan 1 per 1
 
-1. Home (Dashboard)
-Halaman utama untuk ringkasan data penting:
-- Total transaksi hari ini & bulan ini (gunakan line chart dari "npm i chart.js" serta gunakan juga chart donat)
-- Total pendapatan
-- Jumlah stok tersisa (produk hampir habis)
-- Total siswa aktif (yang bertugas POS)
-- Grafik penjualan per minggu / per kategori
-- Daftar order terbaru
-- Produk terlaris dan diskon yang sedang aktif
-- (fungsi analitik ringan untuk membantu admin memantau kinerja harian dan kebutuhan restock produk)
+# Point of Sale (POS) - Halaman Utama Transaksi
+Halaman ini merupakan inti dari sistem POS, di mana siswa melakukan transaksi penjualan harian. Desain dan alur kerjanya mirip dengan interface kasir pada toko ritel modern seperti Indomart atau Alfamart.
+
+---
+# KERJAKAN FITUR UTAMA DAHULU!
+## Fitur Utama
+
+### A. Panel Produk (Sebelah Kiri)
+#### Tampilan Produk
+Menampilkan produk dalam bentuk grid card layout yang berisi:
+- Gambar produk (`image_url`)
+- Nama produk
+- Harga (`unit_price`)
+- Stok tersedia
+- Tombol **+ KERANJANG** untuk menambahkan produk ke keranjang
+
+#### Fitur Pencarian & Filter
+- **Search Box:** mencari produk berdasarkan nama  
+- **Dropdown Kategori:** memfilter produk berdasarkan `category_id`  
+- Grid produk akan **auto-update** setiap kali pencarian atau filter berubah  
+
+#### Fitur Scan QR/Barcode (Opsional, 'Direkomendasikan')
+- Input field khusus untuk scan barcode produk  
+- Saat barcode di-scan, sistem otomatis mencari produk berdasarkan barcode dari tabel `products`  
+- Jika produk ditemukan, item langsung ditambahkan ke keranjang  
+- Menggunakan library seperti `react-barcode-scanner` (npm i react-barcode-scanner)
 
 ---
 
-2. Products Management
-Halaman untuk menampilkan dan mengelola semua produk di POS:
-- Tambah, edit, dan hapus produk (proses crud)
-- Upload / ubah gambar produk, untuk uploads memakai file import dari device user pastikan di simpan di folder uploads, untuk link url di simpan di database! (pastikan bisa upload dari storage dia, dan bisa upload dari link url, serta pastikan untu uploadnya itu nanti dia akan mengupload file ke folder uploads, setelah dari situ, pastikan nama file yang di upload sudah di fix agar bisa di tampilkan, dan ketika sudah upload pastikan ada previewnya juga. Serta ketika dalam proses delete pastikan file yang ada di folder uploads juga ikut di hapus ya!, begitupun untuk yang di database di sesuaikan saja)
-- Filter produk berdasarkan kategori  
-- Kolom stok dan harga saat ini  
-- Tombol **“View Price History”** per produk (terhubung ke `product_price_history`)  
-- Notifikasi otomatis untuk stok minimum dan produk kadaluarsa  
-- Admin hanya melakukan kontrol dan input awal — operasional dilakukan oleh siswa/employee POS  
+### B. Panel Keranjang (Sebelah Kanan)
+#### Tabel Keranjang
+Menampilkan data dalam bentuk tabel dengan kolom:
+- Nomor urut item  
+- Nama produk  
+- Jumlah (`qty`)  
+- Harga per item  
+- Subtotal (qty × price)  
+- Tombol **Delete** untuk menghapus item individual  
+
+#### Tombol Aksi
+- **Hapus Item:** menghapus satu produk dari keranjang  
+- **Clear All:** mengosongkan seluruh isi keranjang  
+- **Update Qty:** mengubah jumlah item (increment/decrement)
+
+#### Perhitungan Otomatis
+- **Subtotal:** total harga semua item  
+- **Diskon:** otomatis dikurangi jika ada `discount_code` valid  
+- **Total Akhir:** subtotal dikurangi diskon  
+- Semua perhitungan berlangsung secara **real-time**
+
+#### Penerapan Diskon
+- Input field untuk memasukkan `discount_code`  
+- Sistem melakukan validasi:
+  - Diskon belum kadaluarsa  
+  - `usage_limit` belum tercapai  
+- Jika valid, tampilkan persentase/nilai diskon dan update total  
+- Jika tidak valid, tampilkan pesan error
 
 ---
 
-3. Category Management
-Halaman untuk manajemen kategori produk:
-- Tambah, edit, dan hapus kategori  (proses crud, menyesuaikan database ya! tanpa data dummy (script.sql))
-- Lihat daftar produk per kategori  
-- Statistik jumlah produk dalam tiap kategori  
+### C. Metode Pembayaran
+#### Pilihan Pembayaran (Dari Kolom `paid_by` di Tabel `invoices`)
+1. **Cash (Tunai):**
+   - Menampilkan input field untuk "Uang Diterima"
+   - Sistem otomatis menghitung **kembalian (uang_diterima - total)**  
+2. **QR Code:**
+   - Menampilkan informasi bahwa pembayaran dilakukan melalui QR (e-wallet / QRIS)
+   - Tidak memerlukan input uang diterima  
+
+#### Tombol Proses Pembayaran
+- Validasi bahwa keranjang tidak kosong  
+- Jika **Cash:** hitung kembalian  
+- Jika **QR:** tampilkan notifikasi bahwa pembayaran QR sedang diproses  
+- Setelah validasi, sistem:
+  1. Menyimpan data transaksi ke tabel `orders` dan `order_details`
+  2. Menghasilkan invoice otomatis
+  3. Redirect ke halaman **Cetak Bon**
 
 ---
 
-4. Discount Management
-Halaman untuk mengatur program diskon aktif:
-- Tambah, edit, dan hapus diskon  
-- Atur masa berlaku (**start_date**, **end_date**)  
-- Atur jenis diskon (**percentage** atau **fixed**)  
-- Kolom **usage_limit** dan **used_count**  
-- Status otomatis: aktif/tidak aktif berdasarkan tanggal  
+## Database yang Terlibat
+- **`products`** – Menyimpan data produk (product_name, price, picture_url, qty, barcode)  
+- **`category`** – Menyediakan filter berdasarkan kategori produk  
+- **`discounts`** – Validasi kode diskon yang dimasukkan  
+- **`orders`** – Menyimpan transaksi utama (order_number, employee_id, order_total, balance, discount_code)  
+- **`order_details`** – Menyimpan rincian item per transaksi  
+- **`invoices`** – Menghasilkan invoice otomatis (invoice_number, invoice_status, paid_by)
 
 ---
 
-5. Order & Sales Management
-Halaman untuk memantau aktivitas transaksi siswa POS:
-- Daftar semua order yang telah dibuat siswa (terhubung ke tabel `orders`)  
-- Filter berdasarkan rentang tanggal, siswa, dan status order (**pending**, **complete**, **refunded**)  
-- Detail order menampilkan daftar item dari `order_details`  
-- Fitur **Export ke Excel / PDF** untuk laporan transaksi, saya ingin fitur ini dibuat tiga opsi, jadi ketika tombol print (pasitkan sudah menggunakan logo export di tombolnya) ditekan, dia akan memunculkan pop up pilihan lagi untuk dibuat menjadi pdf, excel ataupun bon struk. Pastikan di dalam pop up dalam rangka menampilkan ketiga opsi dari pilihan tersebut, user bisa pilih salah satu atau bisa pilih lebih dari 1 lalu ketika sudah di pilih user nanti bisa klik tombol print (jika user sudah pilih maka dia baru bisa klik tombol print, jika belum pilih sama sekali buat tombol printnya menjadi disable) yang ada pada pop up, dan di samping kiri tombol print ada juga tombol cancel jika user tidak jadi melakukan aksi tersebut!
+## Alur Transaksi
+1. Siswa melihat daftar produk pada grid  
+2. Siswa memilih produk (klik card atau scan barcode)  
+3. Produk ditambahkan ke keranjang  
+4. Keranjang terupdate secara real-time  
+5. (Opsional) Terapkan diskon dengan memasukkan `discount_code`  
+6. Pilih metode pembayaran (Cash / QR)  
+7. Tekan tombol **Proses Pembayaran**  
+8. Sistem menyimpan transaksi ke database dan membuat invoice otomatis  
+9. User diarahkan ke halaman **Cetak Bon** (ukuran sesuai bon struk pada umumnya)
 
 ---
 
-6. Invoice Management
-Halaman monitoring semua invoice yang sudah dibuat:
-- Daftar invoice berdasarkan **invoice_status** (diproses, berhasil, gagal)  
-- Tampilkan total, diskon, dan metode pembayaran (**paid_by**)  
-- Fitur **“View Receipt”** untuk cetak invoice  (fungsinya mirip mirip seperti yang ada di orders & sales management untuk print invoice nya, kamu bisa cek https://invoice-generator.com/?locale=en di web untuk melihat template invoice invoice yang ada)
-- Relasi langsung dengan `orders` untuk keperluan audit  
+# Student Profile - Halaman Profil Siswa
+Halaman ini digunakan oleh siswa untuk melihat dan mengedit data pribadi mereka sendiri. Fungsinya memastikan bahwa setiap siswa dapat mengelola informasi pribadinya tanpa mengakses data siswa lain.
 
 ---
 
-7. Student Management
-Halaman untuk manajemen data siswa sebagai operator POS:
-- Daftar seluruh siswa aktif  
-- Lihat transaksi yang dibuat (relasi ke `orders`)  
-- Status siswa: aktif / tidak aktif  
-- Edit profil siswa (alamat, jurusan, kelas)  
-- Statistik kontribusi penjualan per siswa  
+## Fitur yang Ditampilkan
+
+### A. Informasi Profil
+Menampilkan data pribadi siswa yang sedang login, meliputi:
+- **NISN**
+- **Nama Lengkap**
+- **Kelas** (X, XI, XII)
+- **Jurusan** (RPL, DKV1, DKV2, BR, MP, AK)
+- **Nomor HP**
+- **Alamat**
+
+Semua data ditampilkan dalam bentuk form yang **read-only secara default**, kecuali ketika mode edit diaktifkan.
 
 ---
 
-8. Report Center (Laporan & Statistik), intinya page ini berisi diagram digram untuk tiap laporannya beserta detailnya (yang bisa mengarah ke halaman yang sesuai dengan laporannya, misal produk terlaris maka di terdapat tombol view detail yang di arahkan ke halaman produk, dan lain sebagainya)
-Pusat laporan keuangan dan aktivitas POS:
-- Laporan Penjualan Harian / Mingguan / Bulanan  
-- Laporan Produk Terlaris  
-- Laporan Penggunaan Diskon  
-- Laporan Stok Barang dan Kadaluarsa  
-- Laporan Pendapatan Per Kelas / Siswa  
-- Semua laporan dapat diexport ke **Excel / PDF**  
+### B. Tombol Aksi
+1. **Edit Profil**  
+   - Mengubah form menjadi mode edit.  
+   - Field seperti Nama, Nomor HP, dan Alamat dapat diubah.  
+   - Setelah disimpan, data langsung diperbarui di database.  
+
+2. **Ubah Password** *(opsional)*  
+   - Menampilkan form ubah password dengan input:
+     - Password lama
+     - Password baru
+     - Konfirmasi password baru  
+   - Password baru harus di-hash menggunakan **MD5** sebelum disimpan ke database.
 
 ---
 
-9. Price History
-Halaman untuk menampilkan riwayat harga dari tabel `product_price_history`:
-- Riwayat perubahan harga per produk (kapan diubah, oleh siapa)  
-- Komparasi harga lama dan harga baru  
-- Grafik tren perubahan harga per produk  (bebas menggunakan grafik dengan chart / diagram apa, yang penting terlihat profesional ya!)
+### C. Keamanan & Batasan
+- Siswa **hanya dapat mengedit profil miliknya sendiri** (berdasarkan session login).  
+- Validasi dilakukan agar siswa tidak dapat mengubah data milik siswa lain.  
+- Password disimpan dalam bentuk **hash MD5** untuk menjaga keamanan data login.
 
 ---
 
-# SEKARANG KERJAKAN SETTINGS
-10. Settings (Pengaturan Sistem)
-Halaman untuk konfigurasi dasar sistem POS:
-- Atur theme gelap atau terang
-- Edit profil admin (username, password)
-- Fitur **Backup / Restore Database** (Backup database maka otomatis download file script.sql, dan untuk restore itu mengembalikan database yang defaultnya)  
-- Kelola **Return & Refund Policies**  (tampilan saja, fungsinya nanti)  
-- Manajemen metode pembayaran (cash, QR, e-money, dll -> tampilan saja, fungsinya nanti)  
+## Alur Penggunaan
+1. Siswa membuka halaman **Profil Siswa**.  
+2. Sistem menampilkan data dari tabel `student` sesuai `student_id` yang sedang login.  
+3. Jika siswa menekan tombol **Edit Profil**, form akan berubah ke mode edit.  
+4. Setelah melakukan perubahan, siswa menekan **Simpan** untuk memperbarui data.  
+5. Jika ingin mengganti password, siswa dapat memilih menu **Ubah Password**.  
+6. Setelah perubahan berhasil, sistem menampilkan notifikasi konfirmasi.
 
 ---
 
-11. Audit Logs (intinya berisi logs logs yang dilakukan oleh admin, berkaitan dengan CRUD pastinya tiap ada proses pasti dimasukan ke dalam logs ini)
-Fitur keamanan tambahan untuk pencatatan aktivitas sistem:
-- Menyimpan semua aktivitas penting (produk ditambah, dihapus, harga diubah, diskon dibuat, dll.)  
-- Menampilkan siapa (admin/siswa), kapan, dan aksi apa yang dilakukan  
-- Filter berdasarkan entitas: produk, diskon, siswa, order  
 
 # PENTING!!!
 ``` Pastikan tampilannya itu responsive dengan menggunakan desain secara konsisten seperti yang sudah ada dan pastikan juga tidak ada double code atau duplicate code serta pastikan lakukan sesuai perintah tanpa ada inisiatif sendiri! Serta PASTIKAN menggunakan data asli dari database tidak menggunakan data dummy ```

@@ -307,7 +307,7 @@ function PriceHistory() {
                   <div className="aspect-square bg-gray-100">
                     {product.picture_url ? (
                       <img
-                        src={product.picture_url.startsWith('http') ? product.picture_url : `http://192.168.1.138:3000${product.picture_url}`}
+                        src={product.picture_url.startsWith('http') ? product.picture_url : `http://172.11.7.76:3000${product.picture_url}`}
                         alt={product.product_name}
                         className="w-full h-full object-cover"
                       />
