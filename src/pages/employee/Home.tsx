@@ -20,7 +20,9 @@ import {
   Settings as SettingsIcon, 
   LogOut,
   Camera,
-  Tag
+  Tag,
+  Sun,
+  Moon
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import crypto from 'crypto-js';
@@ -98,6 +100,9 @@ function EmployeeHome() {
   // Clear cart confirmation modal state
   const [showClearCartModal, setShowClearCartModal] = useState(false);
 
+  // Theme state
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>('system');
+
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
   const fetchProducts = async () => {
@@ -131,6 +136,51 @@ function EmployeeHome() {
     }
   };
 
+  const loadTheme = () => {
+    const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null;
+    if (savedTheme) {
+      setTheme(savedTheme);
+      applyTheme(savedTheme);
+    } else {
+      // Default to system if no saved preference
+      setTheme('system');
+      applyTheme('system');
+    }
+  };
+
+  const applyTheme = (selectedTheme: 'light' | 'dark' | 'system') => {
+    const root = document.documentElement;
+    
+    // If system, detect from browser preference
+    let actualTheme: 'light' | 'dark';
+    if (selectedTheme === 'system') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      actualTheme = prefersDark ? 'dark' : 'light';
+    } else {
+      actualTheme = selectedTheme;
+    }
+    
+    if (actualTheme === 'dark') {
+      root.style.setProperty('--color-primary', '#019f63');
+      root.style.setProperty('--color-primary-dark', '#1F2937');
+      root.style.setProperty('--color-text-primary', '#F9FAFB');
+      root.style.setProperty('--color-text-secondary', '#a4e6cc');
+      root.style.setProperty('--color-background', '#111827');
+      root.style.setProperty('--color-surface', '#1F2937');
+      root.style.setProperty('--color-border', '#374151');
+      root.style.colorScheme = 'dark';
+    } else {
+      root.style.setProperty('--color-primary', '#019f63');
+      root.style.setProperty('--color-primary-light', '#DDF6ED');
+      root.style.setProperty('--color-text-primary', '#1F2937');
+      root.style.setProperty('--color-text-secondary', '#4B5563');
+      root.style.setProperty('--color-background', '#FFFFFF');
+      root.style.setProperty('--color-surface', '#F8F9FA');
+      root.style.setProperty('--color-border', '#E5E7EB');
+      root.style.colorScheme = 'light';
+    }
+  };
+
   useEffect(() => {
     if (!isSessionValid()) {
       clearSession();
@@ -157,6 +207,34 @@ function EmployeeHome() {
 
     fetchProducts();
     fetchCategories();
+    loadTheme();
+    
+    // Listen for system theme changes
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleSystemThemeChange = () => {
+      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null;
+      // Only apply if user is using system theme
+      if (savedTheme === 'system' || !savedTheme) {
+        applyTheme('system');
+      }
+    };
+    
+    // Add listener for modern browsers
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handleSystemThemeChange);
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handleSystemThemeChange);
+    }
+    
+    // Cleanup listener on unmount
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handleSystemThemeChange);
+      } else {
+        mediaQuery.removeListener(handleSystemThemeChange);
+      }
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -1562,12 +1640,21 @@ function EmployeeHome() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 
-                className="text-xl font-bold"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                Settings
-              </h2>
+              <div className="flex items-center">
+                {theme === 'light' ? (
+                  <Sun className="mr-3" size={24} style={{ color: 'var(--color-primary)' }} />
+                ) : theme === 'dark' ? (
+                  <Moon className="mr-3" size={24} style={{ color: 'var(--color-primary)' }} />
+                ) : (
+                  <Sun className="mr-3" size={24} style={{ color: 'var(--color-primary)' }} />
+                )}
+                <h2 
+                  className="text-xl font-bold"
+                  style={{ color: 'var(--color-text-primary)' }}
+                >
+                  Theme Settings
+                </h2>
+              </div>
               <button
                 onClick={() => setSettingsModalOpen(false)}
                 className="p-1"
@@ -1577,14 +1664,143 @@ function EmployeeHome() {
               </button>
             </div>
 
-            <div className="text-center py-10">
-              <SettingsIcon size={48} style={{ color: 'var(--color-text-secondary)', margin: '0 auto' }} />
-              <p 
-                className="mt-4"
-                style={{ color: 'var(--color-text-secondary)' }}
+            <p className="mb-4" style={{ color: 'var(--color-text-secondary)' }}>
+              Pilih tema tampilan aplikasi
+            </p>
+
+            <div className="space-y-3">
+              {/* Light Mode Option */}
+              <div 
+                onClick={() => {
+                  setTheme('light');
+                  localStorage.setItem('theme', 'light');
+                  applyTheme('light');
+                  toast.success('Theme changed to Light mode');
+                }}
+                className="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all duration-300"
+                style={{ 
+                  backgroundColor: theme === 'light' ? 'var(--color-primary)' : 'var(--color-background)',
+                  border: `2px solid ${theme === 'light' ? 'var(--color-primary)' : 'var(--color-border)'}`
+                }}
               >
-                Fitur settings akan segera tersedia
-              </p>
+                <div className="flex items-center gap-3">
+                  <Sun size={24} style={{ color: theme === 'light' ? 'white' : 'var(--color-text-secondary)' }} />
+                  <div>
+                    <h3 className="font-semibold" style={{ color: theme === 'light' ? 'white' : 'var(--color-text-primary)' }}>
+                      Light Mode
+                    </h3>
+                    <p className="text-sm" style={{ color: theme === 'light' ? 'rgba(255,255,255,0.8)' : 'var(--color-text-secondary)' }}>
+                      Tampilan terang
+                    </p>
+                  </div>
+                </div>
+                <div 
+                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                  style={{ 
+                    borderColor: theme === 'light' ? 'white' : 'var(--color-border)',
+                    backgroundColor: theme === 'light' ? 'white' : 'transparent'
+                  }}
+                >
+                  {theme === 'light' && (
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }}></div>
+                  )}
+                </div>
+              </div>
+
+              {/* Dark Mode Option */}
+              <div 
+                onClick={() => {
+                  setTheme('dark');
+                  localStorage.setItem('theme', 'dark');
+                  applyTheme('dark');
+                  toast.success('Theme changed to Dark mode');
+                }}
+                className="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all duration-300"
+                style={{ 
+                  backgroundColor: theme === 'dark' ? 'var(--color-primary)' : 'var(--color-background)',
+                  border: `2px solid ${theme === 'dark' ? 'var(--color-primary)' : 'var(--color-border)'}`
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <Moon size={24} style={{ color: theme === 'dark' ? 'white' : 'var(--color-text-secondary)' }} />
+                  <div>
+                    <h3 className="font-semibold" style={{ color: theme === 'dark' ? 'white' : 'var(--color-text-primary)' }}>
+                      Dark Mode
+                    </h3>
+                    <p className="text-sm" style={{ color: theme === 'dark' ? 'rgba(255,255,255,0.8)' : 'var(--color-text-secondary)' }}>
+                      Tampilan gelap
+                    </p>
+                  </div>
+                </div>
+                <div 
+                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                  style={{ 
+                    borderColor: theme === 'dark' ? 'white' : 'var(--color-border)',
+                    backgroundColor: theme === 'dark' ? 'white' : 'transparent'
+                  }}
+                >
+                  {theme === 'dark' && (
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }}></div>
+                  )}
+                </div>
+              </div>
+
+              {/* System (Auto) Option */}
+              <div 
+                onClick={() => {
+                  setTheme('system');
+                  localStorage.setItem('theme', 'system');
+                  applyTheme('system');
+                  toast.success('Theme changed to System (Auto) mode');
+                }}
+                className="flex items-center justify-between p-4 rounded-lg cursor-pointer transition-all duration-300"
+                style={{ 
+                  backgroundColor: theme === 'system' ? 'var(--color-primary)' : 'var(--color-background)',
+                  border: `2px solid ${theme === 'system' ? 'var(--color-primary)' : 'var(--color-border)'}`
+                }}
+              >
+                <div className="flex items-center gap-3">
+                  <div className="relative" style={{ width: '24px', height: '24px' }}>
+                    <Sun 
+                      size={16} 
+                      style={{ 
+                        position: 'absolute', 
+                        top: '0', 
+                        left: '0',
+                        color: theme === 'system' ? 'white' : 'var(--color-text-secondary)' 
+                      }} 
+                    />
+                    <Moon 
+                      size={16} 
+                      style={{ 
+                        position: 'absolute', 
+                        bottom: '0', 
+                        right: '0',
+                        color: theme === 'system' ? 'white' : 'var(--color-text-secondary)' 
+                      }} 
+                    />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold" style={{ color: theme === 'system' ? 'white' : 'var(--color-text-primary)' }}>
+                      System (Auto)
+                    </h3>
+                    <p className="text-sm" style={{ color: theme === 'system' ? 'rgba(255,255,255,0.8)' : 'var(--color-text-secondary)' }}>
+                      Ikuti pengaturan browser
+                    </p>
+                  </div>
+                </div>
+                <div 
+                  className="w-5 h-5 rounded-full border-2 flex items-center justify-center"
+                  style={{ 
+                    borderColor: theme === 'system' ? 'white' : 'var(--color-border)',
+                    backgroundColor: theme === 'system' ? 'white' : 'transparent'
+                  }}
+                >
+                  {theme === 'system' && (
+                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: 'var(--color-primary)' }}></div>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
