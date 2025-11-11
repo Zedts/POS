@@ -146,7 +146,7 @@ function Products() {
       if (product.image_url) {
         const previewUrl = product.image_url.startsWith('http')
           ? product.image_url
-          : `http://172.11.7.76:3000${product.image_url}`;
+          : `http://172.11.13.216:3000${product.image_url}`;
         setImagePreview(previewUrl);
       }
       setSelectedFile(null);
@@ -455,7 +455,7 @@ function Products() {
                         <td className="px-4 py-3">
                           {product.image_url ? (
                             <img
-                              src={product.image_url.startsWith('http') ? product.image_url : `http://172.11.7.76:3000${product.image_url}`}
+                              src={product.image_url.startsWith('http') ? product.image_url : `http://172.11.13.216:3000${product.image_url}`}
                               alt={product.product_name}
                               className="w-12 h-12 object-cover rounded"
                             />

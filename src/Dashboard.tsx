@@ -34,6 +34,8 @@ function Dashboard() {
       window.location.href = '/admin/home';
     } else if (role === 'employee') {
       window.location.href = '/employee/home';
+    } else if (role === 'customer') {
+      window.location.href = '/customer/home';
     }
   };
 
@@ -47,6 +49,8 @@ function Dashboard() {
       window.location.href = '/admin/home';
     } else if (userRole === 'employee') {
       window.location.href = '/employee/home';
+    } else if (userRole === 'customer') {
+      window.location.href = '/customer/home';
     } else {
       openAuthModal('login');
     }
@@ -57,6 +61,8 @@ function Dashboard() {
       return 'Admin';
     } else if (userRole === 'employee') {
       return 'Employee';
+    } else if (userRole === 'customer') {
+      return 'Customer';
     }
     return 'Mulai';
   };

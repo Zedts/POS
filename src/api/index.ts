@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getToken } from "../utils/auth";
 
-const API_URL = "http://172.11.7.76:3000/api";
+const API_URL = "http://172.11.13.216:3000/api";
 
 // Create axios instance
 const api = axios.create({
@@ -36,7 +36,7 @@ export const loginAPI = async (username: string, password: string) => {
   }
 };
 
-// Register API (Student only)
+// Register API (Student/Employee only)
 export const registerAPI = async (studentData: {
   nisn: string;
   username: string;
@@ -49,6 +49,26 @@ export const registerAPI = async (studentData: {
 }) => {
   try {
     const response = await api.post("/auth/register", studentData);
+    return response.data;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    throw error.response?.data || { success: false, message: "Terjadi kesalahan koneksi" };
+  }
+};
+
+// Register Customer API
+export const registerCustomerAPI = async (customerData: {
+  nisn: string;
+  username: string;
+  password: string;
+  fullName: string;
+  phone: string;
+  address: string;
+  studentClass: string;
+  major: string;
+}) => {
+  try {
+    const response = await api.post("/customers/register", customerData);
     return response.data;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {

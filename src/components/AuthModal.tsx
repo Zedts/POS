@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { X, Lock, User, Phone, MapPin, GraduationCap, BookOpen, CreditCard } from 'lucide-react';
-import { loginAPI, registerAPI } from '../api/index';
+import { loginAPI, registerAPI, registerCustomerAPI } from '../api/index';
 import { toast } from 'react-toastify';
+import AdminValidationModal from './AdminValidationModal';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -16,6 +17,11 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  // Register Tab State (customer or employee)
+  const [registerTab, setRegisterTab] = useState<'customer' | 'employee'>('customer');
+  const [adminValidationOpen, setAdminValidationOpen] = useState(false);
+  const [adminValidated, setAdminValidated] = useState(false);
 
   // Login State
   const [loginData, setLoginData] = useState({
@@ -42,8 +48,36 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
       setMode(initialMode);
       setError('');
       setSuccess('');
+      setRegisterTab('customer'); // Always start with customer tab
+      setAdminValidated(false);
     }
   }, [isOpen, initialMode]);
+
+  // Handle tab switch in register mode
+  const handleRegisterTabChange = (tab: 'customer' | 'employee') => {
+    if (tab === 'employee') {
+      // Show admin validation popup immediately
+      setAdminValidationOpen(true);
+    } else {
+      setRegisterTab('customer');
+      setAdminValidated(false);
+    }
+  };
+
+  // Handle admin validation success
+  const handleAdminValidationSuccess = () => {
+    setAdminValidationOpen(false);
+    setAdminValidated(true);
+    setRegisterTab('employee');
+    toast.success('Validasi berhasil! Silakan isi form employee');
+  };
+
+  // Handle admin validation close
+  const handleAdminValidationClose = () => {
+    setAdminValidationOpen(false);
+    setRegisterTab('customer'); // Return to customer tab
+    setAdminValidated(false);
+  };
 
   if (!isOpen) return null;
 
@@ -98,6 +132,13 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
       return;
     }
 
+    // NISN validation: must be exactly 10 digits
+    if (registerData.nisn.length !== 10 || !/^\d{10}$/.test(registerData.nisn)) {
+      toast.error('NISN harus 10 digit angka');
+      setLoading(false);
+      return;
+    }
+
     if (registerData.password !== registerData.confirmPassword) {
       toast.error('Password tidak cocok');
       setLoading(false);
@@ -111,7 +152,7 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
     }
 
     try {
-      const response = await registerAPI({
+      const payload = {
         nisn: registerData.nisn,
         username: registerData.username,
         password: registerData.password,
@@ -120,26 +161,33 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
         address: registerData.address,
         studentClass: registerData.studentClass,
         major: registerData.major,
-      });
+      };
+
+      // Determine which API to call based on register tab
+      const response = registerTab === 'customer'
+        ? await registerCustomerAPI(payload)
+        : await registerAPI(payload);
 
       if (response.success) {
-        toast.success('Registrasi berhasil! Silakan login');
-        setLoading(false);
-        setTimeout(() => {
-          setMode('login');
-          setSuccess('');
-          setRegisterData({
-            nisn: '',
-            username: '',
-            password: '',
-            confirmPassword: '',
-            fullName: '',
-            phone: '',
-            address: '',
-            studentClass: 'X',
-            major: 'RPL',
-          });
-        }, 2000);
+        const roleText = registerTab === 'customer' ? 'Customer' : 'Employee';
+        toast.success(`Registrasi ${roleText} berhasil! Mengalihkan...`);
+        
+        // Auto-login after successful registration
+        const loginResponse = await loginAPI(registerData.username, registerData.password);
+        
+        if (loginResponse.success) {
+          // Store token in localStorage with 8 hour expiry
+          const expiryTime = new Date().getTime() + (8 * 60 * 60 * 1000);
+          localStorage.setItem('token', loginResponse.token);
+          localStorage.setItem('tokenExpiry', expiryTime.toString());
+          localStorage.setItem('userRole', loginResponse.role);
+          localStorage.setItem('userData', JSON.stringify(loginResponse.data));
+
+          setTimeout(() => {
+            onSuccess(loginResponse.role, loginResponse.data);
+            setLoading(false);
+          }, 1500);
+        }
       } else {
         toast.error(response.message || 'Registrasi gagal');
         setLoading(false);
@@ -158,30 +206,72 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
-      <div 
-        className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
-        style={{ backgroundColor: 'var(--color-background)' }}
-      >
-        {/* Header */}
-        <div className="p-6 border-b" style={{ backgroundColor: 'var(--color-primary)', borderColor: 'var(--color-border)' }}>
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold text-white">
-              {mode === 'login' ? 'Login' : 'Register Siswa'}
-            </h2>
-            <button
-              onClick={onClose}
-              className="text-white hover:opacity-80 transition-opacity"
-            >
-              <X className="w-6 h-6" />
-            </button>
+    <>
+      {/* Admin Validation Modal */}
+      <AdminValidationModal
+        isOpen={adminValidationOpen}
+        onClose={handleAdminValidationClose}
+        onValidationSuccess={handleAdminValidationSuccess}
+      />
+
+      {/* Main Auth Modal */}
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+        <div 
+          className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
+          style={{ backgroundColor: 'var(--color-background)' }}
+        >
+          {/* Header */}
+          <div className="p-6 border-b" style={{ backgroundColor: 'var(--color-primary)', borderColor: 'var(--color-border)' }}>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold text-white">
+                {mode === 'login' ? 'Login' : 'Register'}
+              </h2>
+              <button
+                onClick={onClose}
+                className="text-white hover:opacity-80 transition-opacity"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <p className="text-white/80 text-sm mt-2">
+              {mode === 'login' 
+                ? 'Masuk ke akun POS Pro Anda' 
+                : 'Daftar sebagai customer atau employee'}
+            </p>
           </div>
-          <p className="text-white/80 text-sm mt-2">
-            {mode === 'login' 
-              ? 'Masuk ke akun POS Pro Anda' 
-              : 'Daftar sebagai siswa untuk menggunakan POS'}
-          </p>
-        </div>
+
+          {/* Register Tabs (Only show in register mode) */}
+          {mode === 'register' && (
+            <div className="flex border-b" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
+              <button
+                type="button"
+                onClick={() => handleRegisterTabChange('customer')}
+                className={`flex-1 py-3 px-4 font-medium transition-colors ${
+                  registerTab === 'customer'
+                    ? 'border-b-2 border-blue-600 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Customer
+              </button>
+              <button
+                type="button"
+                onClick={() => handleRegisterTabChange('employee')}
+                className={`flex-1 py-3 px-4 font-medium transition-colors relative ${
+                  registerTab === 'employee'
+                    ? 'border-b-2 border-blue-600 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
+              >
+                Employee
+                {adminValidated && registerTab === 'employee' && (
+                  <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded-full">
+                    Tervalidasi
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
 
         {/* Body */}
         <div className="p-6 max-h-[70vh] overflow-y-auto">
@@ -487,6 +577,7 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
         </div>
       </div>
     </div>
+    </>
   );
 }
 

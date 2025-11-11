@@ -21,6 +21,11 @@ import AuditLogs from './pages/admin/AuditLogs';
 // Employee Import Pages
 import EmployeeHome from './pages/employee/Home';
 
+// Customer Import Pages
+import CustomerHome from './pages/customers/Home';
+import CustomerHistory from './pages/customers/History';
+import CustomerDiscounts from './pages/customers/Discounts';
+
 function App() {
   return (
     <BrowserRouter>
@@ -55,6 +60,11 @@ function App() {
 
         {/* Employee Routes */}
         <Route path="/employee/home" element={<EmployeeHome />} />
+
+        {/* Customer Routes */}
+        <Route path="/customer/home" element={<CustomerHome />} />
+        <Route path="/customer/history" element={<CustomerHistory />} />
+        <Route path="/customer/discounts" element={<CustomerDiscounts />} />
       </Routes>
     </BrowserRouter>
   );
