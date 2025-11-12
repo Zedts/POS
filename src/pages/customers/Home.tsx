@@ -192,237 +192,194 @@ function CustomerHome() {
           </p>
         </div>
 
-        {/* 3-Column Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {/* Top Products Card */}
-          <div 
-            className="rounded-lg p-6"
-            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
-          >
-            <div className="flex items-center gap-3 mb-4">
-              <div 
-                className="p-2 rounded-lg"
-                style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-              >
-                <TrendingUp size={24} />
-              </div>
-              <h2 
-                className="text-xl font-bold"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
-                Produk Terlaris
-              </h2>
-            </div>
-
-            <div className="space-y-3 mb-4">
-              {topProducts.length === 0 ? (
-                <p 
-                  className="text-center py-8"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
-                  Belum ada produk terlaris
-                </p>
-              ) : (
-                topProducts.map((product) => (
-                  <div
-                    key={product.id}
-                    onClick={() => handleProductClick(product.id)}
-                    className="flex items-center gap-3 p-3 rounded-lg cursor-pointer hover:bg-opacity-50 transition-all"
-                    style={{ backgroundColor: 'var(--color-background)' }}
-                  >
-                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                      <img
-                        src={product.product_picture || 'https://via.placeholder.com/100?text=No+Image'}
-                        alt={product.product_name}
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.src = 'https://via.placeholder.com/100?text=No+Image';
-                        }}
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p 
-                        className="font-semibold truncate"
-                        style={{ color: 'var(--color-text-primary)' }}
-                      >
-                        {product.product_name}
-                      </p>
-                      <p 
-                        className="text-sm"
-                        style={{ color: 'var(--color-text-secondary)' }}
-                      >
-                        {product.total_qty_sold} terjual
-                      </p>
-                    </div>
-                    <ChevronRight size={18} style={{ color: 'var(--color-text-secondary)' }} />
-                  </div>
-                ))
-              )}
-            </div>
+        {/* Top Products Card - Full Width */}
+        <div 
+          className="rounded-lg p-6 mb-6 border"
+          style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
+        >
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+              <TrendingUp className="w-5 h-5" />
+              Produk Terlaris
+            </h2>
           </div>
 
+          {topProducts.length === 0 ? (
+            <div className="text-center py-8">
+              <TrendingUp 
+                className="w-12 h-12 mx-auto mb-3" 
+                style={{ color: 'var(--color-text-secondary)', opacity: 0.5 }} 
+              />
+              <p style={{ color: 'var(--color-text-secondary)' }}>
+                Belum ada produk terlaris
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {topProducts.map((product) => (
+                <div
+                  key={product.id}
+                  onClick={() => handleProductClick(product.id)}
+                  className="p-4 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
+                  style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)' }}
+                >
+                  <div className="w-full aspect-square rounded-lg overflow-hidden mb-3">
+                    <img
+                      src={product.product_picture || 'https://via.placeholder.com/100?text=No+Image'}
+                      alt={product.product_name}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = 'https://via.placeholder.com/100?text=No+Image';
+                      }}
+                    />
+                  </div>
+                  <p 
+                    className="font-semibold mb-1 line-clamp-2"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    {product.product_name}
+                  </p>
+                  <p 
+                    className="text-sm"
+                    style={{ color: 'var(--color-text-secondary)' }}
+                  >
+                    Terjual: {product.total_qty_sold} unit
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* 2-Column Grid for Discounts & History */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Active Discounts Card */}
           <div 
-            className="rounded-lg p-6"
-            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            className="rounded-lg p-6 border"
+            style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div 
-                className="p-2 rounded-lg"
-                style={{ backgroundColor: 'var(--color-success)', color: 'white' }}
-              >
-                <Tag size={24} />
-              </div>
-              <h2 
-                className="text-xl font-bold"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <Tag className="w-5 h-5" />
                 Diskon Aktif
               </h2>
+              <button
+                onClick={() => navigate('/customer/discounts')}
+                className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                View All <ChevronRight className="h-4 w-4" />
+              </button>
             </div>
 
-            <div className="space-y-3 mb-4">
-              {discounts.length === 0 ? (
-                <p 
-                  className="text-center py-8"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
+            {discounts.length === 0 ? (
+              <div className="text-center py-8">
+                <Tag 
+                  className="w-12 h-12 mx-auto mb-3" 
+                  style={{ color: 'var(--color-text-secondary)', opacity: 0.5 }} 
+                />
+                <p style={{ color: 'var(--color-text-secondary)' }}>
                   Belum ada diskon aktif
                 </p>
-              ) : (
-                discounts.map((discount) => (
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {discounts.slice(0, 3).map((discount) => (
                   <div
                     key={discount.discount_code}
                     onClick={() => handleCopyDiscount(discount.discount_code)}
-                    className="p-4 rounded-lg cursor-pointer hover:bg-opacity-80 transition-all"
-                    style={{ backgroundColor: 'var(--color-background)', border: '1px solid var(--color-border)' }}
+                    className="p-4 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
+                    style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)' }}
                   >
-                    <div className="flex justify-between items-start mb-2">
-                      <p 
-                        className="font-bold text-lg"
-                        style={{ color: 'var(--color-text-primary)' }}
+                    <div className="flex items-start justify-between mb-2">
+                      <span
+                        className="font-mono font-bold text-lg"
+                        style={{ color: 'var(--color-primary)' }}
                       >
                         {discount.discount_code}
-                      </p>
-                      <span 
-                        className="px-2 py-1 rounded-full text-sm font-bold"
-                        style={{ backgroundColor: 'var(--color-success)', color: 'white' }}
+                      </span>
+                      <span
+                        className="text-sm font-semibold px-2 py-1 rounded"
+                        style={{
+                          backgroundColor: 'var(--color-primary)',
+                          color: 'white'
+                        }}
                       >
                         {discount.discount_percent}%
                       </span>
                     </div>
-                    <p 
-                      className="text-sm mb-2"
-                      style={{ color: 'var(--color-text-secondary)' }}
-                    >
+                    <p className="text-sm mb-2" style={{ color: 'var(--color-text-secondary)' }}>
                       {discount.discount_description}
                     </p>
-                    <p 
-                      className="text-xs"
-                      style={{ color: 'var(--color-text-secondary)' }}
-                    >
+                    <p className="text-xs" style={{ color: 'var(--color-text-secondary)' }}>
                       Valid: {formatDate(discount.start_date)} - {formatDate(discount.end_date)}
                     </p>
-                    <p 
-                      className="text-xs mt-2 italic"
-                      style={{ color: 'var(--color-text-secondary)' }}
-                    >
-                      Klik untuk salin kode
-                    </p>
                   </div>
-                ))
-              )}
-            </div>
-
-            <button
-              onClick={() => navigate('/customer/discounts')}
-              className="w-full py-2 rounded-lg font-semibold transition-all hover:opacity-90"
-              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-            >
-              Lihat Semua Diskon
-            </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Transaction History Card */}
           <div 
-            className="rounded-lg p-6"
-            style={{ backgroundColor: 'var(--color-surface)', border: '1px solid var(--color-border)' }}
+            className="rounded-lg p-6 border"
+            style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}
           >
-            <div className="flex items-center gap-3 mb-4">
-              <div 
-                className="p-2 rounded-lg"
-                style={{ backgroundColor: '#f59e0b', color: 'white' }}
-              >
-                <ShoppingBag size={24} />
-              </div>
-              <h2 
-                className="text-xl font-bold"
-                style={{ color: 'var(--color-text-primary)' }}
-              >
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2" style={{ color: 'var(--color-text-primary)' }}>
+                <ShoppingBag className="w-5 h-5" />
                 Riwayat Transaksi
               </h2>
+              <button
+                onClick={() => navigate('/customer/history')}
+                className="flex items-center gap-1 text-sm font-medium hover:opacity-70 transition-opacity"
+                style={{ color: 'var(--color-primary)' }}
+              >
+                View All <ChevronRight className="h-4 w-4" />
+              </button>
             </div>
 
-            <div className="space-y-3 mb-4">
-              {recentOrders.length === 0 ? (
-                <p 
-                  className="text-center py-8"
-                  style={{ color: 'var(--color-text-secondary)' }}
-                >
+            {recentOrders.length === 0 ? (
+              <div className="text-center py-8">
+                <ShoppingBag 
+                  className="w-12 h-12 mx-auto mb-3" 
+                  style={{ color: 'var(--color-text-secondary)', opacity: 0.5 }} 
+                />
+                <p style={{ color: 'var(--color-text-secondary)' }}>
                   Belum ada transaksi
                 </p>
-              ) : (
-                recentOrders.map((order) => (
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {recentOrders.map((order) => (
                   <div
                     key={order.order_number}
                     onClick={() => handleOrderClick(order.order_number)}
-                    className="p-4 rounded-lg cursor-pointer hover:bg-opacity-50 transition-all"
-                    style={{ backgroundColor: 'var(--color-background)' }}
+                    className="p-4 rounded-lg border cursor-pointer transition-all hover:shadow-lg"
+                    style={{ backgroundColor: 'var(--color-background)', borderColor: 'var(--color-border)' }}
                   >
                     <div className="flex justify-between items-start mb-2">
-                      <div className="flex-1">
-                        <p 
-                          className="font-semibold"
-                          style={{ color: 'var(--color-text-primary)' }}
-                        >
-                          {order.order_number}
-                        </p>
-                        <p 
-                          className="text-sm"
-                          style={{ color: 'var(--color-text-secondary)' }}
-                        >
-                          {formatDate(order.order_date)}
-                        </p>
-                      </div>
+                      <span className="font-semibold" style={{ color: 'var(--color-text-primary)' }}>
+                        {order.order_number}
+                      </span>
                       {getStatusBadge(order.status)}
                     </div>
+                    <p className="text-sm mb-1" style={{ color: 'var(--color-text-secondary)' }}>
+                      {formatDate(order.order_date)}
+                    </p>
                     <div className="flex justify-between items-center">
-                      <p 
-                        className="text-sm"
-                        style={{ color: 'var(--color-text-secondary)' }}
-                      >
+                      <p className="text-sm" style={{ color: 'var(--color-text-secondary)' }}>
                         {order.items_count} item
                       </p>
-                      <p 
-                        className="font-bold"
-                        style={{ color: 'var(--color-primary)' }}
-                      >
+                      <p className="font-semibold" style={{ color: 'var(--color-primary)' }}>
                         {formatCurrency(order.balance)}
                       </p>
                     </div>
                   </div>
-                ))
-              )}
-            </div>
-
-            <button
-              onClick={() => navigate('/customer/history')}
-              className="w-full py-2 rounded-lg font-semibold transition-all hover:opacity-90"
-              style={{ backgroundColor: 'var(--color-primary)', color: 'white' }}
-            >
-              Lihat Semua Transaksi
-            </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
