@@ -26,6 +26,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'react-toastify';
 import crypto from 'crypto-js';
+import CustomerSearchDropdown from '../../components/CustomerSearchDropdown';
 
 interface Product {
   id: number;
@@ -57,6 +58,14 @@ interface DiscountInfo {
   discountType: string;
 }
 
+interface Customer {
+  id: number;
+  full_name: string;
+  class: string;
+  major: string;
+  nisn: string;
+}
+
 function EmployeeHome() {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [userData, setUserData] = useState<any>(null);
@@ -70,6 +79,9 @@ function EmployeeHome() {
   const [editProfileModalOpen, setEditProfileModalOpen] = useState(false);
   const [settingsModalOpen, setSettingsModalOpen] = useState(false);
   const [cartMobileOpen, setCartMobileOpen] = useState(false);
+  
+  // Customer state
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null);
   
   // Discount state
   const [discountCode, setDiscountCode] = useState('');
@@ -288,6 +300,11 @@ function EmployeeHome() {
   const handleSaveProfile = async () => {
     try {
       // Validation
+      if (!editUsername.trim()) {
+        toast.error('Username tidak boleh kosong');
+        return;
+      }
+
       if (!editFullName.trim()) {
         toast.error('Nama lengkap tidak boleh kosong');
         return;
@@ -336,6 +353,7 @@ function EmployeeHome() {
 
       // Update profile
       const profileData = {
+        username: editUsername,
         full_name: editFullName,
         phone: editPhone,
         address: editAddress
@@ -346,6 +364,7 @@ function EmployeeHome() {
       // Update localStorage userData
       const updatedUserData = {
         ...userData,
+        username: editUsername,
         full_name: editFullName,
         phone: editPhone,
         address: editAddress
@@ -567,6 +586,11 @@ function EmployeeHome() {
       return;
     }
 
+    if (!selectedCustomer) {
+      toast.error('Mohon pilih customer terlebih dahulu');
+      return;
+    }
+
     if (paymentMethod === 'cash') {
       const received = parseFloat(cashReceived) || 0;
       const total = calculateTotal();
@@ -588,6 +612,7 @@ function EmployeeHome() {
       // Create order
       const orderData = {
         employeeId: Number(userData.id),
+        customerId: Number(selectedCustomer.id),
         orderTotal: Number(calculateSubtotal().toFixed(2)),
         balance: Number(calculateTotal().toFixed(2)),
         ...(appliedDiscount?.code && { discountCode: appliedDiscount.code })
@@ -636,6 +661,7 @@ function EmployeeHome() {
       
       // Clear cart and reset form (localStorage will be cleared automatically by useEffect)
       setCart([]);
+      setSelectedCustomer(null);
       setAppliedDiscount(null);
       setDiscountCode('');
       setCashReceived('');
@@ -897,7 +923,7 @@ function EmployeeHome() {
                   }}
                 >
                   <User size={20} />
-                  <span className="hidden sm:inline">Profile</span>
+                  <span className="hidden sm:inline">{userData?.full_name}</span>
                 </button>
 
                 {profileMenuOpen && (
@@ -1199,6 +1225,22 @@ function EmployeeHome() {
                 )}
               </div>
 
+              {/* Customer Selection */}
+              {cart.length > 0 && (
+                <div className="mb-4 pb-4 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
+                  <p 
+                    className="text-sm font-semibold mb-2"
+                    style={{ color: 'var(--color-text-primary)' }}
+                  >
+                    Pilih Customer <span style={{ color: '#ef4444' }}>*</span>
+                  </p>
+                  <CustomerSearchDropdown
+                    selectedCustomer={selectedCustomer}
+                    onSelectCustomer={setSelectedCustomer}
+                  />
+                </div>
+              )}
+
               {/* Discount Section */}
               {cart.length > 0 && (
                 <div className="mb-4 pb-4 border-t pt-4" style={{ borderColor: 'var(--color-border)' }}>
@@ -1443,16 +1485,16 @@ function EmployeeHome() {
                   className="block text-sm font-semibold mb-1"
                   style={{ color: 'var(--color-text-primary)' }}
                 >
-                  Username <span style={{ color: 'var(--color-text-secondary)', fontSize: '12px' }}>(Read-only)</span>
+                  Username <span style={{ color: '#ef4444', fontSize: '12px' }}>*</span>
                 </label>
                 <input
                   type="text"
                   value={editUsername}
-                  disabled
-                  className="w-full px-4 py-2 rounded-lg border outline-none cursor-not-allowed opacity-60"
+                  onChange={(e) => setEditUsername(e.target.value)}
+                  className="w-full px-4 py-2 rounded-lg border outline-none"
                   style={{ 
-                    backgroundColor: 'var(--color-surface-dark)',
-                    color: 'var(--color-text-secondary)',
+                    backgroundColor: 'var(--color-background)',
+                    color: 'var(--color-text-primary)',
                     borderColor: 'var(--color-border)'
                   }}
                 />

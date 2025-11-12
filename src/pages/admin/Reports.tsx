@@ -602,7 +602,7 @@ function Reports() {
                               </span>
                               {product.product_picture && (
                                 <img
-                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.13.216:3000${product.product_picture}`}
+                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.10.44:3000${product.product_picture}`}
                                   alt={product.product_name}
                                   className="w-16 h-16 object-cover rounded-lg"
                                 />
@@ -801,7 +801,7 @@ function Reports() {
                             <div key={product.id} className="p-4 rounded-lg border" style={{ borderColor: 'var(--color-warning)' }}>
                               {product.product_picture && (
                                 <img
-                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.13.216:3000${product.product_picture}`}
+                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.10.44:3000${product.product_picture}`}
                                   alt={product.product_name}
                                   className="w-full h-32 object-cover rounded-lg mb-3"
                                 />
@@ -846,7 +846,7 @@ function Reports() {
                             <div key={product.id} className="p-4 rounded-lg border" style={{ borderColor: 'var(--color-danger)' }}>
                               {product.product_picture && (
                                 <img
-                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.13.216:3000${product.product_picture}`}
+                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.10.44:3000${product.product_picture}`}
                                   alt={product.product_name}
                                   className="w-full h-32 object-cover rounded-lg mb-3"
                                 />
@@ -894,7 +894,7 @@ function Reports() {
                             <div key={product.id} className="p-4 rounded-lg border" style={{ borderColor: 'var(--color-border)' }}>
                               {product.product_picture && (
                                 <img
-                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.13.216:3000${product.product_picture}`}
+                                  src={product.product_picture.startsWith('http') ? product.product_picture : `http://172.11.10.44:3000${product.product_picture}`}
                                   alt={product.product_name}
                                   className="w-full h-32 object-cover rounded-lg mb-3 opacity-50"
                                 />

@@ -53,7 +53,7 @@ function AdminValidationModal({ isOpen, onClose, onValidationSuccess }: AdminVal
   };
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)' }}>
+    <div className="fixed inset-0 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.6)', zIndex: 10000 }}>
       <div 
         className="rounded-xl shadow-2xl w-full max-w-md relative"
         style={{ backgroundColor: 'var(--color-background)' }}

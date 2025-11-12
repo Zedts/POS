@@ -11,7 +11,8 @@ import {
   BarChart3, 
   TrendingUp, 
   Settings as SettingsIcon,
-  FileSearch
+  FileSearch,
+  History
 } from 'lucide-react';
 
 export interface StaggeredMenuItem {
@@ -73,6 +74,7 @@ export const StaggeredMenu: React.FC<StaggeredMenuProps> = ({
     if (link.includes('/price-history')) return <TrendingUp {...iconProps} />;
     if (link.includes('/audit-logs')) return <FileSearch {...iconProps} />;
     if (link.includes('/settings')) return <SettingsIcon {...iconProps} />;
+    if (link.includes('/history')) return <History {...iconProps} />;
     
     return <Home {...iconProps} />;
   };

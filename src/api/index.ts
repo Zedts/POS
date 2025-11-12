@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getToken } from "../utils/auth";
 
-const API_URL = "http://172.11.13.216:3000/api";
+const API_URL = "http://172.11.10.44:3000/api";
 
 // Create axios instance
 const api = axios.create({
@@ -395,6 +395,7 @@ export const updateOrderStatusAPI = async (orderNumber: string, status: string) 
 // Create new order
 export const createOrderAPI = async (orderData: {
   employeeId: number;
+  customerId: number;
   orderTotal: number;
   balance: number;
   discountCode?: string;
@@ -716,6 +717,7 @@ export const restoreDatabaseAPI = async (sqlContent: string) => {
 
 // Student Profile API
 export const updateStudentProfileAPI = async (id: number, profileData: {
+  username: string;
   full_name: string;
   phone: string;
   address: string;
@@ -739,6 +741,78 @@ export const updateStudentPasswordAPI = async (id: number, oldPassword: string, 
   } catch (error: unknown) {
     const err = error as { response?: { data?: unknown } };
     throw err.response?.data || { success: false, message: "Failed to update password" };
+  }
+};
+
+// Customer API Functions
+export const getTopSellingProductsAPI = async () => {
+  try {
+    const response = await api.get('/customers/top-products');
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to fetch top selling products" };
+  }
+};
+
+export const getActiveDiscountsAPI = async () => {
+  try {
+    const response = await api.get('/customers/active-discounts');
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to fetch active discounts" };
+  }
+};
+
+export const searchCustomersAPI = async (query: string) => {
+  try {
+    const response = await api.get('/customers/search', {
+      params: { query }
+    });
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to search customers" };
+  }
+};
+
+export const getCustomerOrdersAPI = async (customerId: number) => {
+  try {
+    const response = await api.get(`/customers/${customerId}/orders`);
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to fetch customer orders" };
+  }
+};
+
+export const getCustomerOrderDetailsAPI = async (customerId: number, orderNumber: string) => {
+  try {
+    const response = await api.get(`/customers/${customerId}/orders/${orderNumber}`);
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to fetch order details" };
+  }
+};
+
+export const updateCustomerProfileAPI = async (id: number, profileData: {
+  username: string;
+  full_name: string;
+  phone: string;
+  address: string;
+  class: string;
+  major: string;
+  currentPassword?: string;
+  newPassword?: string;
+}) => {
+  try {
+    const response = await api.put(`/customers/${id}`, profileData);
+    return response.data;
+  } catch (error: unknown) {
+    const err = error as { response?: { data?: unknown } };
+    throw err.response?.data || { success: false, message: "Failed to update customer profile" };
   }
 };
 

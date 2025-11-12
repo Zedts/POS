@@ -215,7 +215,7 @@ function AuthModal({ isOpen, onClose, mode: initialMode, onSuccess }: AuthModalP
       />
 
       {/* Main Auth Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+      <div className="fixed inset-0 flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)', zIndex: 9999 }}>
         <div 
           className="relative w-full max-w-md rounded-2xl shadow-2xl overflow-hidden"
           style={{ backgroundColor: 'var(--color-background)' }}
